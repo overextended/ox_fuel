@@ -1,15 +1,25 @@
-if ox.showBlips == 1 then
-
-elseif ox.showBlips == 2 then
-
-end
-
+local Blips = {}
 local inStation = false
 
 for i = 1, #ox.stations do
     ox.stations[i]:onPlayerInOut(function(isInside)
         inStation = isInside
     end)
+
+    local Pos = ox.stations[i]:getBoundingBoxCenter()
+    Blips[i] = AddBlipForCoord(Pos.x, Pos.y, Pos.z)
+    SetBlipSprite(Blips[i], 415)
+    SetBlipDisplay(Blips[i], 4)
+    SetBlipScale(Blips[i], 0.6)
+    SetBlipColour(Blips[i], 23)
+    if ox.showBlips == 1 then
+        SetBlipAsShortRange(Blips[i], true)
+    elseif ox.showBlips == 2 then
+        SetBlipAsShortRange(Blips[i], false)
+    end
+    BeginTextCommandSetBlipName('STRING')
+    AddTextComponentSubstringPlayerName('Fuel Station')
+    EndTextCommandSetBlipName(Blips[i]) 
 end
 
 -- Synchronize fuel
