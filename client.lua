@@ -32,12 +32,6 @@ local function StartFueling(vehicle)
     end)
 end
 
-if ox.showBlips == 1 then
-
-elseif ox.showBlips == 2 then
-
-end
-
 local inStation = false
 local gasPumps = {
     `prop_gas_pump_old2`,
@@ -53,6 +47,21 @@ for i = 1, #ox.stations do
     ox.stations[i]:onPlayerInOut(function(isInside)
         inStation = isInside
     end)
+
+    local Pos = ox.stations[i]:getBoundingBoxCenter()
+    local Blip = AddBlipForCoord(Pos.x, Pos.y, Pos.z)
+    SetBlipSprite(Blip, 415)
+    SetBlipDisplay(Blip, 4)
+    SetBlipScale(Blip, 0.6)
+    SetBlipColour(Blip, 23)
+    if ox.showBlips == 1 then
+        SetBlipAsShortRange(Blip, true)
+    elseif ox.showBlips == 2 then
+        SetBlipAsShortRange(Blip, false)
+    end
+    BeginTextCommandSetBlipName('STRING')
+    AddTextComponentSubstringPlayerName('Fuel Station')
+    EndTextCommandSetBlipName(Blip) 
 end
 
 -- Synchronize fuel
