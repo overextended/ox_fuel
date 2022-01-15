@@ -48,20 +48,18 @@ for i = 1, #ox.stations do
         inStation = isInside
     end)
 
-    local Pos = ox.stations[i]:getBoundingBoxCenter()
-    local Blip = AddBlipForCoord(Pos.x, Pos.y, Pos.z)
-    SetBlipSprite(Blip, 415)
-    SetBlipDisplay(Blip, 4)
-    SetBlipScale(Blip, 0.6)
-    SetBlipColour(Blip, 23)
-    if ox.showBlips == 1 then
-        SetBlipAsShortRange(Blip, true)
-    elseif ox.showBlips == 2 then
-        SetBlipAsShortRange(Blip, false)
+    if ox.showBlips > 0 then
+        local coords = ox.stations[i]:getBoundingBoxCenter()
+        local blip = AddBlipForCoord(coords.x, coords.y, coords.z)
+        SetBlipSprite(blip, 415)
+        SetBlipDisplay(blip, 4)
+        SetBlipScale(blip, 0.6)
+        SetBlipColour(blip, 23)
+        SetBlipAsShortRange(blip, ox.showBlips == 1)
+        BeginTextCommandSetBlipName('STRING')
+        AddTextComponentSubstringPlayerName('Fuel Station')
+        EndTextCommandSetBlipName(blip)
     end
-    BeginTextCommandSetBlipName('STRING')
-    AddTextComponentSubstringPlayerName('Fuel Station')
-    EndTextCommandSetBlipName(Blip) 
 end
 
 -- Synchronize fuel
