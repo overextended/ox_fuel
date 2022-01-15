@@ -1,7 +1,6 @@
-stations = {
+local stations = {
     -- Los Santos stations
     {
-        name = 'fuel-1',
         coords = vector3(-71.28, -1761.16, 29.48),
         heading = 340,
         length = 13.8,
@@ -10,7 +9,6 @@ stations = {
         maxZ = 32.48
     },
     {
-        name = 'fuel-2',
         coords = vector3(264.74, -1260.98, 29.18),
         length = 19.2,
         width = 25.8,
@@ -19,7 +17,6 @@ stations = {
         maxZ = 32.18
     },
     {
-        name = 'fuel-3',
         coords = vector3(1208.66, -1402.64, 35.22),
         length = 14.2,
         width = 12.0,
@@ -28,7 +25,6 @@ stations = {
         maxZ = 38.22
     },
     {
-        name = 'fuel-4',
         coords = vector3(818.83, -1029.89, 26.17),
         length = 10,
         width = 25.0,
@@ -37,7 +33,6 @@ stations = {
         maxZ = 29.17
     },
     {
-        name = 'fuel-5',
         coords = vector3(1181.27, -329.57, 69.18),
         length = 27.2,
         width = 11.8,
@@ -46,7 +41,6 @@ stations = {
         maxZ = 72.18
     },
     {
-        name = 'fuel-6',
         coords = vector3(621.07, 269.52, 103.04),
         length = 17.0,
         width = 27.4,
@@ -55,7 +49,6 @@ stations = {
         maxZ = 106.04
     },
     {
-        name = 'fuel-7',
         coords = vector3(-1437.58, -276.38, 46.21),
         length = 20.2,
         width = 20.6,
@@ -64,7 +57,6 @@ stations = {
         maxZ = 49.21
     },
     {
-        name = 'fuel-8',
         coords = vector3(-2096.6, -318.15, 13.02),
         length = 21.6,
         width = 25.8,
@@ -73,7 +65,6 @@ stations = {
         maxZ = 16.02
     },
     {
-        name = 'fuel-9',
         coords = vector3(-1799.03, 803.11, 138.4),
         length = 14.8,
         width = 25.8,
@@ -82,7 +73,6 @@ stations = {
         maxZ = 141.4
     },
     {
-        name = 'fuel-10',
         coords = vector3(-524.84, -1211.02, 18.18),
         length = 16.6,
         width = 19.4,
@@ -91,7 +81,6 @@ stations = {
         maxZ = 21.18
     },
     {
-        name = 'fuel-11',
         coords = vector3(319.99, -1471.79, 30.51),
         length = 18.8,
         width = 27.2,
@@ -100,7 +89,6 @@ stations = {
         maxZ = 33.51
     },
     {
-        name = 'fuel-12',
         coords = vector3(2581.56, 361.65, 108.46),
         length = 15.4,
         width = 25.6,
@@ -110,7 +98,6 @@ stations = {
     },
     -- Blaine County fuel sations
     {
-        name = 'fuel-13',
         coords = vector3(-319.84, -1471.77, 30.55),
         length = 28.1,
         width = 19.1,
@@ -119,7 +106,6 @@ stations = {
         maxZ = 34.35
     },
     {
-        name = 'fuel-14',
         coords = vector3(175.31, -1561.73, 29.26),
         length = 20.2,
         width = 16.8,
@@ -128,7 +114,6 @@ stations = {
         maxZ = 33.86
     },
     {
-        name = 'fuel-15',
         coords = vector3(-723.72, -935.51, 19.21),
         length = 14.8,
         width = 26.4,
@@ -138,7 +123,6 @@ stations = {
     },
     -- Blaine County fuel sations
     {
-        name = 'fuel-16',
         coords = vector3(-2555.31, 2334.01, 33.06),
         length = 25.6,
         width = 15.8,
@@ -147,7 +131,6 @@ stations = {
         maxZ = 36.06
     },
     {
-        name = 'fuel-17',
         coords = vector3(49.69, 2778.33, 57.88),
         length = 10,
         width = 10,
@@ -156,7 +139,6 @@ stations = {
         maxZ = 60.88
     },
     {
-        name = 'fuel-18',
         coords = vector3(264.15, 2607.05, 44.95),
         length = 10,
         width = 10,
@@ -165,7 +147,6 @@ stations = {
         maxZ = 47.95
     },
     {
-        name = 'fuel-19',
         coords = vector3(1207.56, 2660.2, 37.81),
         length = 10,
         width = 10,
@@ -174,7 +155,6 @@ stations = {
         maxZ = 40.81
     },
     {
-        name = 'fuel-20',
         coords = vector3(2538.0, 2593.83, 37.94),
         length = 5,
         width = 5,
@@ -183,7 +163,6 @@ stations = {
         maxZ = 40.94
     },
     {
-        name = 'fuel-21',
         coords = vector3(2680.01, 3265.0, 55.24),
         length = 10,
         width = 10,
@@ -192,7 +171,6 @@ stations = {
         maxZ = 58.24
     },
     {
-        name = 'fuel-22',
         coords = vector3(2005.07, 3774.33, 32.18),
         length = 12.2,
         width = 16.4,
@@ -201,7 +179,6 @@ stations = {
         maxZ = 35.18
     },
     {
-        name = 'fuel-23',
         coords = vector3(1688.42, 4930.85, 42.08),
         length = 14.8,
         width = 10.4,
@@ -210,7 +187,6 @@ stations = {
         maxZ = 45.08
     },
     {
-        name = 'fuel-24',
         coords = vector3(1039.34, 2671.78, 39.55),
         length = 14.2,
         width = 15.6,
@@ -219,7 +195,6 @@ stations = {
         maxZ = 42.55
     },
     {
-        name = 'fuel-25',
         coords = vector3(1785.58, 3330.47, 41.38),
         length = 7.8,
         width = 8.2,
@@ -229,7 +204,6 @@ stations = {
     },
     -- Paleto bay stations
     {
-        name = 'fuel-26',
         coords = vector3(1702.79, 6416.86, 33.64),
         length = 13.2,
         width = 14.6,
@@ -238,7 +212,6 @@ stations = {
         maxZ = 35.44
     },
     {
-        name = 'fuel-27',
         coords = vector3(179.94, 6602.6, 31.85),
         length = 15.0,
         width = 26.8,
@@ -247,7 +220,6 @@ stations = {
         maxZ = 34.85
     },
     {
-        name = 'fuel-28',
         coords = vector3(-93.98, 6420.1, 31.48),
         length = 11.0,
         width = 15.4,
@@ -256,3 +228,16 @@ stations = {
         maxZ = 34.48
     }
 }
+
+ox.stations = {}
+
+for i = 1, #stations do
+    local station = stations[i]
+    ox.stations[i] = BoxZone:Create(station.coords, station.length, station.width, {
+        name = ('station-%s'):format(i),
+        heading = station.heading,
+        minZ = station.minZ,
+        maxZ = station.maxZ,
+        debugPoly = true
+    })
+end
