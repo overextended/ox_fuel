@@ -1,5 +1,5 @@
--- Los Santos stations
 stations = {
+    -- Los Santos stations
     {
         name = 'fuel-1',
         coords = vector3(-71.28, -1761.16, 29.48),
@@ -104,7 +104,82 @@ stations = {
         coords = vector3(2581.56, 361.65, 108.46),
         length = 15.4,
         width = 25.6,
+        heading = 358,
         minZ = 107.46,
         maxZ = 111.46
+    },
+    -- Blaine County fuel sations
+    {
+        name = 'fuel-13',
+        coords = vector3(-2555.31, 2334.01, 33.06),
+        length = 25.6,
+        width = 15.8,
+        heading = 4,
+        minZ = 32.06,
+        maxZ = 36.06
+    },
+    {
+        name = 'fuel-14',
+        coords = vector3(49.69, 2778.33, 57.88),
+        length = 10,
+        width = 10,
+        heading = 320,
+        minZ = 56.88,
+        maxZ = 60.88
+    },
+    {
+        name = 'fuel-15',
+        coords = vector3(264.15, 2607.05, 44.95),
+        length = 10,
+        width = 10,
+        heading = 10,
+        minZ = 43.95,
+        maxZ = 47.95
+    },
+    {
+        name = 'fuel-16',
+        coords = vector3(1207.56, 2660.2, 37.81),
+        length = 10,
+        width = 10,
+        heading = 315,
+        minZ = 36.81,
+        maxZ = 40.81
+    },
+    {
+        name = 'fuel-17',
+        coords = vector3(2538.0, 2593.83, 37.94),
+        length = 5,
+        width = 5,
+        heading = 15,
+        minZ = 36.94,
+        maxZ = 40.94
+    },
+    {
+        name = 'fuel-18',
+        coords = vector3(2680.01, 3265.0, 55.24),
+        length = 10,
+        width = 10,
+        heading = 330,
+        minZ = 54.24,
+        maxZ = 58.24
+    },
+    {
+        name = 'fuel-19',
+        coords = vector3(2005.07, 3774.33, 32.18),
+        length = 12.2,
+        width = 16.4,
+        heading = 30,
+        minZ = 31.18,
+        maxZ = 35.18
+    },
+    {
+        name = 'fuel-20',
+        coords = vector3(1688.42, 4930.85, 42.08),
+        length = 14.8,
+        width = 10.4,
+        heading = 55,
+        minZ = 41.08,
+        maxZ = 45.08
     }
+    -- Paleto bay stations
 }
