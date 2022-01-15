@@ -180,6 +180,33 @@ stations = {
         heading = 55,
         minZ = 41.08,
         maxZ = 45.08
-    }
+    },
     -- Paleto bay stations
+    {
+        name = 'fuel-21',
+        coords = vector3(1702.79, 6416.86, 33.64),
+        length = 13.2,
+        width = 14.6,
+        heading = 335,
+        minZ = 31.44,
+        maxZ = 35.44
+    },
+    {
+        name = 'fuel-22',
+        coords = vector3(179.94, 6602.6, 31.85),
+        length = 15.0,
+        width = 26.8,
+        heaidng = 10,
+        minZ = 30.85,
+        maxZ = 34.85
+    },
+    {
+        name = 'fuel-23',
+        coords = vector3(-93.98, 6420.1, 31.48),
+        length = 11.0,
+        width = 15.4,
+        heading = 45,
+        minZ = 30.48,
+        maxZ = 34.48
+    }
 }
