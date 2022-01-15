@@ -1,7 +1,15 @@
 if ox.showBlips == 1 then
-    -- DISTANCE BLIPS
+
 elseif ox.showBlips == 2 then
-    -- CREATE BLIPS
+
+end
+
+local inStation = false
+
+for i = 1, #ox.stations do
+    ox.stations[i]:onPlayerInOut(function(isInside)
+        inStation = isInside
+    end)
 end
 
 -- Synchronize fuel

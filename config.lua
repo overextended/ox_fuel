@@ -1,6 +1,6 @@
 ox = {
     -- Enable support for ox_inventory
-	inventory = false,
+	integration = false,
 
     /*
     * Show or hide gas stations blips
