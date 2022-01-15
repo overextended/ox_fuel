@@ -1,5 +1,47 @@
-local Blips = {}
+local isFueling = false
+local function StartFueling(vehicle)
+    -- todo: refactor, make non ox-inventory
+    isFueling = true
+    local Vehicle = Entity(vehicle).state
+    local fuelAmount = Vehicle.fuel
+    local tick = 200
+    local fuelingDuration = math.ceil((100 - fuelAmount) / 3 * 1000)
+    local fuelToAdd = (100 - fuelAmount) / fuelingDuration * tick -- Need better calculation, not 100% accurate
+    local fuelTick = SetInterval(function()
+        Vehicle:set('fuel', Vehicle.fuel + fuelToAdd)
+    end, tick)
+    exports.ox_inventory:Progress({
+        duration = fuelingDuration,
+        label = 'Fueling vehicle',
+        useWhileDead = false,
+        canCancel = true,
+        disable = {
+            move = true,
+            car = true,
+            combat = true,
+            mouse = false
+        },
+        anim = {
+            dict = 'timetable@gardener@filling_can',
+            clip = 'gar_ig_5_filling_can',
+            flags = 49,
+        },
+    }, function(cancel)
+        ClearInterval(fuelTick)
+        isFueling = false
+    end)
+end
+
 local inStation = false
+local gasPumps = {
+    `prop_gas_pump_old2`,
+    `prop_gas_pump_1a`,
+    `prop_vintage_pump`,
+    `prop_gas_pump_old3`,
+    `prop_gas_pump_1c`,
+    `prop_gas_pump_1b`,
+    `prop_gas_pump_1d`,
+}
 
 for i = 1, #ox.stations do
     ox.stations[i]:onPlayerInOut(function(isInside)
@@ -7,19 +49,19 @@ for i = 1, #ox.stations do
     end)
 
     local Pos = ox.stations[i]:getBoundingBoxCenter()
-    Blips[i] = AddBlipForCoord(Pos.x, Pos.y, Pos.z)
-    SetBlipSprite(Blips[i], 415)
-    SetBlipDisplay(Blips[i], 4)
-    SetBlipScale(Blips[i], 0.6)
-    SetBlipColour(Blips[i], 23)
+    local Blip = AddBlipForCoord(Pos.x, Pos.y, Pos.z)
+    SetBlipSprite(Blip, 415)
+    SetBlipDisplay(Blip, 4)
+    SetBlipScale(Blip, 0.6)
+    SetBlipColour(Blip, 23)
     if ox.showBlips == 1 then
-        SetBlipAsShortRange(Blips[i], true)
+        SetBlipAsShortRange(Blip, true)
     elseif ox.showBlips == 2 then
-        SetBlipAsShortRange(Blips[i], false)
+        SetBlipAsShortRange(Blip, false)
     end
     BeginTextCommandSetBlipName('STRING')
     AddTextComponentSubstringPlayerName('Fuel Station')
-    EndTextCommandSetBlipName(Blips[i]) 
+    EndTextCommandSetBlipName(Blip) 
 end
 
 -- Synchronize fuel
@@ -44,3 +86,20 @@ SetInterval(function()
     SetVehicleFuelLevel(vehicle, newFuel)
     Vehicle:set('fuel', newFuel, true)
 end, 1000)
+
+RegisterCommand('startfueling', function()
+    local playerPed = PlayerPedId()
+    if not inStation or GetVehiclePedIsIn(playerPed, false) ~= 0 or isFueling then return end
+    local playerCoords = GetEntityCoords(playerPed)
+    for i = 1, #gasPumps do
+        local pump = GetClosestObjectOfType(playerCoords.x, playerCoords.y, playerCoords.z, 3.0, gasPumps[i], false, false, false)
+        if pump ~= 0 then
+            local vehicle = GetPlayersLastVehicle()
+            if vehicle ~= 0 and #(GetEntityCoords(vehicle) - playerCoords) < 3.0 then
+                TaskTurnPedToFaceEntity(playerPed, vehicle, -1)
+                StartFueling(vehicle)
+            return end
+        break end
+    end
+end)
+RegisterKeyMapping('startfueling', 'Fuel vehicle', 'keyboard', 'e')
