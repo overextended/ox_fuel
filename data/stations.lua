@@ -81,7 +81,8 @@ local stations = {
         maxZ = 21.18
     },
     {
-        coords = vector3(319.99, -1471.79, 30.51),
+        name = 'fuel-11',
+        coords = vector3(-319.99, -1471.79, 30.51),
         length = 18.8,
         width = 27.2,
         heading = 30,
