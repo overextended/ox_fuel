@@ -81,15 +81,6 @@ local stations = {
         maxZ = 21.18
     },
     {
-        name = 'fuel-11',
-        coords = vector3(-319.99, -1471.79, 30.51),
-        length = 18.8,
-        width = 27.2,
-        heading = 30,
-        minZ = 29.31,
-        maxZ = 33.51
-    },
-    {
         coords = vector3(2581.56, 361.65, 108.46),
         length = 15.4,
         width = 25.6,
@@ -97,7 +88,6 @@ local stations = {
         minZ = 107.46,
         maxZ = 111.46
     },
-    -- Blaine County fuel sations
     {
         coords = vector3(-319.84, -1471.77, 30.55),
         length = 28.1,
