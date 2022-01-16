@@ -7,7 +7,7 @@ local function StartFueling(vehicle)
     local fuelingDuration = ((100 - math.ceil(fuelAmount)) / 2) * 1000
     local tick = fuelingDuration / 10
     local fuelToAdd = (100 - fuelAmount) / fuelingDuration * tick -- Need better calculation, not 100% accurate
-    exports.ox_inventory:Progress({
+    --[[exports.ox_inventory:Progress({
         duration = fuelingDuration,
         label = 'Fueling vehicle',
         useWhileDead = false,
@@ -25,14 +25,13 @@ local function StartFueling(vehicle)
         },
     }, function(cancel)
         isFueling = false
-    end)
+    end)]]--
     while Vehicle.fuel < 100 do
         Wait(tick)
         Vehicle:set('fuel', Vehicle.fuel + fuelToAdd)
     end
 end
 
-local inStation = false
 local gasPumps = {
     `prop_gas_pump_old2`,
     `prop_gas_pump_1a`,
@@ -43,23 +42,60 @@ local gasPumps = {
     `prop_gas_pump_1d`,
 }
 
+local inStation = false
+
 for i = 1, #ox.stations do
     ox.stations[i]:onPlayerInOut(function(isInside)
         inStation = isInside
     end)
 
-    if ox.showBlips > 0 then
+    if ox.showBlips == 2 then
         local coords = ox.stations[i]:getBoundingBoxCenter()
         local blip = AddBlipForCoord(coords.x, coords.y, coords.z)
         SetBlipSprite(blip, 415)
         SetBlipDisplay(blip, 4)
         SetBlipScale(blip, 0.6)
         SetBlipColour(blip, 23)
-        SetBlipAsShortRange(blip, ox.showBlips == 1)
+        SetBlipAsShortRange(blip, true)
         BeginTextCommandSetBlipName('STRING')
         AddTextComponentSubstringPlayerName('Fuel Station')
         EndTextCommandSetBlipName(blip)
     end
+end
+
+if ox.showBlips == 1 then
+    local currentBlip
+    local closestDistance
+    local closestStation
+
+    SetInterval(function()
+        local playerCoords = GetEntityCoords(PlayerPedId())
+
+        for i = 1, #ox.stations do
+            local station = ox.stations[i]
+            local distance = #(playerCoords - station:getBoundingBoxCenter())
+
+            if not closestDistance or distance < closestDistance then
+                closestDistance = distance
+                closestStation = station
+            end
+        end
+
+        if DoesBlipExist(currentBlip) then
+            RemoveBlip(currentBlip)
+        end
+
+        local coords = closestStation:getBoundingBoxCenter()
+        currentBlip = AddBlipForCoord(coords.x, coords.y, coords.z)
+        SetBlipSprite(currentBlip, 415)
+        SetBlipDisplay(currentBlip, 4)
+        SetBlipScale(currentBlip, 0.6)
+        SetBlipColour(currentBlip, 23)
+        SetBlipAsShortRange(currentBlip, true)
+        BeginTextCommandSetBlipName('STRING')
+        AddTextComponentSubstringPlayerName('Closest Fuel Station')
+        EndTextCommandSetBlipName(currentBlip)
+    end, 5000)
 end
 
 -- Synchronize fuel

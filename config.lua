@@ -1,14 +1,14 @@
 ox = {
     -- Enable support for ox_inventory
-	integration = false,
+	inventory = false,
 
     /*
     * Show or hide gas stations blips
     * 0 - Hide all
-    * 1 - Show nearest
+    * 1 - Show nearest (5000ms interval check)
     * 2 - Show all
     */
-    showBlips = 0,
+    showBlips = 1,
 
     -- What keys to disable while fueling
     disabledKeys = { 0, 22, 23, 24, 29, 30, 31, 37, 44, 56, 82, 140, 166, 167, 168, 170, 288, 289, 311, 323 },
