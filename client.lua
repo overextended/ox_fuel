@@ -4,12 +4,9 @@ local function StartFueling(vehicle)
     isFueling = true
     local Vehicle = Entity(vehicle).state
     local fuelAmount = Vehicle.fuel
-    local tick = 200
-    local fuelingDuration = math.ceil((100 - fuelAmount) / 3 * 1000)
+    local fuelingDuration = ((100 - math.ceil(fuelAmount)) / 2) * 1000
+    local tick = fuelingDuration / 10
     local fuelToAdd = (100 - fuelAmount) / fuelingDuration * tick -- Need better calculation, not 100% accurate
-    local fuelTick = SetInterval(function()
-        Vehicle:set('fuel', Vehicle.fuel + fuelToAdd)
-    end, tick)
     exports.ox_inventory:Progress({
         duration = fuelingDuration,
         label = 'Fueling vehicle',
@@ -27,9 +24,12 @@ local function StartFueling(vehicle)
             flags = 49,
         },
     }, function(cancel)
-        ClearInterval(fuelTick)
         isFueling = false
     end)
+    while Vehicle.fuel < 100 do
+        Wait(tick)
+        Vehicle:set('fuel', Vehicle.fuel + fuelToAdd)
+    end
 end
 
 local inStation = false
