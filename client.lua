@@ -1,11 +1,12 @@
 local inStation = false
+local isFueling = false
 local inStationInterval
 
 for i = 1, #ox.stations do
     ox.stations[i]:onPlayerInOut(function(isInside)
         inStation = isInside
 
-        if not ox.qtarget and isInside then
+        if not ox.qtarget and isInside and not isFueling then
             inStationInterval = SetInterval(function()
                 DisplayHelpTextThisFrame('fuelHelpText', false)
             end)
@@ -86,15 +87,17 @@ SetInterval(function()
     Vehicle:set('fuel', newFuel, true)
 end, 1000)
 
-local isFueling = false
 local function StartFueling(vehicle)
     -- todo: refactor, make non ox-inventory
     isFueling = true
+    local tickCounter = 0
     local Vehicle = Entity(vehicle).state
+    local tickNumber = 10
     local fuelAmount = Vehicle.fuel
-    local fuelingDuration = ((100 - math.ceil(fuelAmount)) / 2) * 1000
-    local tick = fuelingDuration / 10
-    local fuelToAdd = (100 - fuelAmount) / fuelingDuration * tick -- Need better calculation, not 100% accurate
+    local missingFuel = 100 - fuelAmount
+    local fuelingDuration = (math.ceil(missingFuel) / 2) * 1000
+    local tick = fuelingDuration / tickNumber
+    local fuelToAdd = missingFuel / fuelingDuration * tick -- Need better calculation, not 100% accurate
     exports.ox_inventory:Progress({
         duration = fuelingDuration,
         label = 'Fueling vehicle',
@@ -114,7 +117,7 @@ local function StartFueling(vehicle)
     }, function(cancel)
         isFueling = false
     end)
-    while Vehicle.fuel < 100 do
+    while tickCounter < tickNumber and isFueling do
         Wait(tick)
         Vehicle:set('fuel', Vehicle.fuel + fuelToAdd)
     end
@@ -128,12 +131,12 @@ RegisterCommand('startfueling', function()
     local playerCoords = GetEntityCoords(ped)
 
     for i = 1, #ox.pumpModels do
-        local pumpObject = GetClosestObjectOfType(playerCoords.x, playerCoords.y, playerCoords.z, 1.5, ox.pumpModels[i], false, false, false)
+        local pumpObject = GetClosestObjectOfType(playerCoords.x, playerCoords.y, playerCoords.z, 1.7, ox.pumpModels[i], false, false, false)
 
         if pumpObject ~= 0 then
             local vehicle = GetPlayersLastVehicle()
 
-            if vehicle ~= 0 and #(GetEntityCoords(vehicle) - playerCoords) < 1.5 then
+            if vehicle ~= 0 and #(GetEntityCoords(vehicle) - playerCoords) < 1.7 then
                 TaskTurnPedToFaceEntity(ped, vehicle, -1)
                 StartFueling(vehicle)
             end
