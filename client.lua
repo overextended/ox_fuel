@@ -1,20 +1,16 @@
 local inStation = false
 local inStationInterval
 
-AddTextEntry('fuelHelpMessage', 'Press E to fuel')
-
 for i = 1, #ox.stations do
     ox.stations[i]:onPlayerInOut(function(isInside)
         inStation = isInside
 
-        if not ox.qtarget then
-            if inInside then
-                inStationInterval = SetInterval(function()
-                    DisplayHelpTextThisFrame('fuelHelpMessage', false)
-                end)
-            elseif inStationInterval then
-                ClearInterval(inStationInterval)
-            end
+        if not ox.qtarget and inInside then
+            inStationInterval = SetInterval(function()
+                DisplayHelpTextThisFrame('fuelHelpText', false)
+            end)
+        elseif inStationInterval then
+            ClearInterval(inStationInterval)
         end
     end)
 
@@ -148,3 +144,4 @@ RegisterCommand('startfueling', function()
 end)
 RegisterKeyMapping('startfueling', 'Fuel vehicle', 'keyboard', 'e')
 TriggerEvent('chat:removeSuggestion', '/startfueling')
+AddTextEntry('fuelHelpText', 'Press ~INPUT_DB1E6BC7~ to fuel')
