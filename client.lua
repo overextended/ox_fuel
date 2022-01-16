@@ -41,6 +41,7 @@ if ox.showBlips == 1 then
         for i = 1, #ox.stations do
             local station = ox.stations[i]
             local distance = #(playerCoords - station:getBoundingBoxCenter())
+            
             if not closestDistance or distance < closestDistance then
                 closestDistance = distance
                 closestStation = station
