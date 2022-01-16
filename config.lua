@@ -39,6 +39,25 @@ ox = {
         [0.0] = 0.00,
     },
 
+    -- Electic vehicles
+    electricModels = {
+        [`airtug`] = true,
+        [`neon`] = true,
+        [`raiden`] = true,
+        [`caddy`] = true,
+        [`caddy2`] = true,
+        [`caddy3`] = true,
+        [`cyclone`] = true,
+        [`dilettante`] = true,
+        [`dilettante2`] = true,
+        [`surge`] = true,
+        [`tezeract`] = true,
+        [`imorgon`] = true,
+        [`khamelion`] = true,
+        [`voltic`] = true,
+        [`iwagen`] = true,
+    },
+
     -- Gas pump models
     pumpModels = {
         `prop_gas_pump_old2`,
