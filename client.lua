@@ -1,52 +1,21 @@
-local isFueling = false
-local function StartFueling(vehicle)
-    -- todo: refactor, make non ox-inventory
-    isFueling = true
-    local Vehicle = Entity(vehicle).state
-    local fuelAmount = Vehicle.fuel
-    local fuelingDuration = ((100 - math.ceil(fuelAmount)) / 2) * 1000
-    local tick = fuelingDuration / 10
-    local fuelToAdd = (100 - fuelAmount) / fuelingDuration * tick -- Need better calculation, not 100% accurate
-    --[[exports.ox_inventory:Progress({
-        duration = fuelingDuration,
-        label = 'Fueling vehicle',
-        useWhileDead = false,
-        canCancel = true,
-        disable = {
-            move = true,
-            car = true,
-            combat = true,
-            mouse = false
-        },
-        anim = {
-            dict = 'timetable@gardener@filling_can',
-            clip = 'gar_ig_5_filling_can',
-            flags = 49,
-        },
-    }, function(cancel)
-        isFueling = false
-    end)]]--
-    while Vehicle.fuel < 100 do
-        Wait(tick)
-        Vehicle:set('fuel', Vehicle.fuel + fuelToAdd)
-    end
-end
-
-local gasPumps = {
-    `prop_gas_pump_old2`,
-    `prop_gas_pump_1a`,
-    `prop_vintage_pump`,
-    `prop_gas_pump_old3`,
-    `prop_gas_pump_1c`,
-    `prop_gas_pump_1b`,
-    `prop_gas_pump_1d`,
-}
-
 local inStation = false
+local inStationInterval
+
+AddTextEntry('fuelHelpMessage', 'Press E to fuel')
 
 for i = 1, #ox.stations do
     ox.stations[i]:onPlayerInOut(function(isInside)
         inStation = isInside
+
+        if not ox.qtarget then
+            if inInside then
+                inStationInterval = SetInterval(function()
+                    DisplayHelpTextThisFrame('fuelHelpMessage', false)
+                end)
+            elseif inStationInterval then
+                ClearInterval(inStationInterval)
+            end
+        end
     end)
 
     if ox.showBlips == 2 then
@@ -121,19 +90,61 @@ SetInterval(function()
     Vehicle:set('fuel', newFuel, true)
 end, 1000)
 
+local isFueling = false
+local function StartFueling(vehicle)
+    -- todo: refactor, make non ox-inventory
+    isFueling = true
+    local Vehicle = Entity(vehicle).state
+    local fuelAmount = Vehicle.fuel
+    local fuelingDuration = ((100 - math.ceil(fuelAmount)) / 2) * 1000
+    local tick = fuelingDuration / 10
+    local fuelToAdd = (100 - fuelAmount) / fuelingDuration * tick -- Need better calculation, not 100% accurate
+    exports.ox_inventory:Progress({
+        duration = fuelingDuration,
+        label = 'Fueling vehicle',
+        useWhileDead = false,
+        canCancel = true,
+        disable = {
+            move = true,
+            car = true,
+            combat = true,
+            mouse = false
+        },
+        anim = {
+            dict = 'timetable@gardener@filling_can',
+            clip = 'gar_ig_5_filling_can',
+            flags = 49,
+        },
+    }, function(cancel)
+        isFueling = false
+    end)
+    while Vehicle.fuel < 100 do
+        Wait(tick)
+        Vehicle:set('fuel', Vehicle.fuel + fuelToAdd)
+    end
+end
+
 RegisterCommand('startfueling', function()
-    local playerPed = PlayerPedId()
-    if not inStation or GetVehiclePedIsIn(playerPed, false) ~= 0 or isFueling then return end
-    local playerCoords = GetEntityCoords(playerPed)
-    for i = 1, #gasPumps do
-        local pump = GetClosestObjectOfType(playerCoords.x, playerCoords.y, playerCoords.z, 3.0, gasPumps[i], false, false, false)
-        if pump ~= 0 then
+    local ped = PlayerPedId()
+
+    if isFueling or not inStation or IsPedInAnyVehicle(ped) then return end
+
+    local playerCoords = GetEntityCoords(ped)
+
+    for i = 1, #ox.pumpModels do
+        local pumpObject = GetClosestObjectOfType(playerCoords.x, playerCoords.y, playerCoords.z, 1.5, ox.pumpModels[i], false, false, false)
+
+        if pumpObject ~= 0 then
             local vehicle = GetPlayersLastVehicle()
-            if vehicle ~= 0 and #(GetEntityCoords(vehicle) - playerCoords) < 3.0 then
-                TaskTurnPedToFaceEntity(playerPed, vehicle, -1)
+
+            if vehicle ~= 0 and #(GetEntityCoords(vehicle) - playerCoords) < 1.5 then
+                TaskTurnPedToFaceEntity(ped, vehicle, -1)
                 StartFueling(vehicle)
-            return end
-        break end
+            end
+
+            return
+        end
     end
 end)
 RegisterKeyMapping('startfueling', 'Fuel vehicle', 'keyboard', 'e')
+TriggerEvent('chat:removeSuggestion', '/startfueling')

@@ -2,6 +2,9 @@ ox = {
     -- Enable support for ox_inventory
 	inventory = false,
 
+    -- Enable support for qTarget
+    qtarget = false,
+
     /*
     * Show or hide gas stations blips
     * 0 - Hide all
@@ -34,5 +37,16 @@ ox = {
         [0.2] = 0.02,
         [0.1] = 0.01,
         [0.0] = 0.00,
+    },
+
+    -- Gas pump models
+    pumpModels = {
+        `prop_gas_pump_old2`,
+        `prop_gas_pump_1a`,
+        `prop_vintage_pump`,
+        `prop_gas_pump_old3`,
+        `prop_gas_pump_1c`,
+        `prop_gas_pump_1b`,
+        `prop_gas_pump_1d`,
     }
 }
