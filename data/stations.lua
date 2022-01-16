@@ -229,6 +229,6 @@ for i = 1, #stations do
         heading = station.heading,
         minZ = station.minZ,
         maxZ = station.maxZ,
-        debugPoly = true
+        --debugPoly = true
     })
 end
