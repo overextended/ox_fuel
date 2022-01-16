@@ -2,16 +2,36 @@ local inStation = false
 local isFueling = false
 local inStationInterval
 
+local function findClosestPump(coords, radius)
+    for i = 1, #ox.pumpModels do
+        local pumpObject = GetClosestObjectOfType(coords.x, coords.y, coords.z, radius, ox.pumpModels[i], false, false, false)
+
+        if pumpObject ~= 0 then
+            return pumpObject
+        end
+    end
+
+    return false
+end
+
 for i = 1, #ox.stations do
     ox.stations[i]:onPlayerInOut(function(isInside)
         inStation = isInside
 
-        if not ox.qtarget and isInside and not isFueling then
+        if not ox.qtarget and not inStationInterval and isInside then
             inStationInterval = SetInterval(function()
-                DisplayHelpTextThisFrame('fuelHelpText', false)
+                local playerCoords = GetEntityCoords(PlayerPedId())
+
+                -- TODO better check distance to pump
+                if IsPedInAnyVehicle(PlayerPedId()) and findClosestPump(playerCoords, 3) then
+                    DisplayHelpTextThisFrame('fuelLeaveVehicleText', false)
+                elseif not isFueling and findClosestPump(playerCoords, 1) then
+                    DisplayHelpTextThisFrame('fuelHelpText', false)
+                end
             end)
-        elseif inStationInterval then
+        elseif not isInside and inStationInterval then
             ClearInterval(inStationInterval)
+            inStationInterval = nil
         end
     end)
 
@@ -135,21 +155,18 @@ RegisterCommand('startfueling', function()
 
     local playerCoords = GetEntityCoords(ped)
 
-    for i = 1, #ox.pumpModels do
-        local pumpObject = GetClosestObjectOfType(playerCoords.x, playerCoords.y, playerCoords.z, 1.7, ox.pumpModels[i], false, false, false)
+    local pumpObject = findClosestPump(playerCoords, 1.7)
 
-        if pumpObject ~= 0 then
-            local vehicle = GetPlayersLastVehicle()
+    if not pumpObject then return end
 
-            if vehicle ~= 0 and #(GetEntityCoords(vehicle) - playerCoords) < 1.7 then
-                TaskTurnPedToFaceEntity(ped, vehicle, -1)
-                StartFueling(vehicle)
-            end
+    local vehicle = GetPlayersLastVehicle()
 
-            return
-        end
+    if vehicle ~= 0 and #(GetEntityCoords(vehicle) - playerCoords) < 1.7 then
+        TaskTurnPedToFaceEntity(ped, vehicle, -1)
+        StartFueling(vehicle)
     end
 end)
 RegisterKeyMapping('startfueling', 'Fuel vehicle', 'keyboard', 'e')
 TriggerEvent('chat:removeSuggestion', '/startfueling')
 AddTextEntry('fuelHelpText', 'Press ~INPUT_C2939D45~ to fuel')
+AddTextEntry('fuelLeaveVehicleText', 'Leave the vehicle to be able to start fueling')
