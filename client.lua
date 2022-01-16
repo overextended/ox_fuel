@@ -31,36 +31,41 @@ end
 
 if ox.showBlips == 1 then
     local currentBlip
-    local closestDistance
     local closestStation
+    local currentStation
 
     SetInterval(function()
         local playerCoords = GetEntityCoords(PlayerPedId())
+        local closestDistance
 
         for i = 1, #ox.stations do
             local station = ox.stations[i]
             local distance = #(playerCoords - station:getBoundingBoxCenter())
-
+            
             if not closestDistance or distance < closestDistance then
                 closestDistance = distance
                 closestStation = station
             end
         end
 
-        if DoesBlipExist(currentBlip) then
-            RemoveBlip(currentBlip)
+        if not currentStation or closestStation ~= currentStation then
+            if DoesBlipExist(currentBlip) then
+                RemoveBlip(currentBlip)
+            end
+    
+            local coords = closestStation:getBoundingBoxCenter()
+            currentBlip = AddBlipForCoord(coords.x, coords.y, coords.z)
+            SetBlipSprite(currentBlip, 415)
+            SetBlipDisplay(currentBlip, 4)
+            SetBlipScale(currentBlip, 0.6)
+            SetBlipColour(currentBlip, 23)
+            SetBlipAsShortRange(currentBlip, true)
+            BeginTextCommandSetBlipName('STRING')
+            AddTextComponentSubstringPlayerName('Closest Fuel Station')
+            EndTextCommandSetBlipName(currentBlip)
         end
 
-        local coords = closestStation:getBoundingBoxCenter()
-        currentBlip = AddBlipForCoord(coords.x, coords.y, coords.z)
-        SetBlipSprite(currentBlip, 415)
-        SetBlipDisplay(currentBlip, 4)
-        SetBlipScale(currentBlip, 0.6)
-        SetBlipColour(currentBlip, 23)
-        SetBlipAsShortRange(currentBlip, true)
-        BeginTextCommandSetBlipName('STRING')
-        AddTextComponentSubstringPlayerName('Closest Fuel Station')
-        EndTextCommandSetBlipName(currentBlip)
+        currentStation = closestStation
     end, 5000)
 end
 
