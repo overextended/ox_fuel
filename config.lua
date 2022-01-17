@@ -19,6 +19,14 @@ ox = {
     -- Fuel cost
     refillCost = 100,
 
+    -- Total duration (ex. 10% missing fuel): 10 / 0.25 * 250 = 10 seconds
+
+    -- Fuel refill value (every 250msec add 0.25%)
+    refillValue = 0.25,
+
+    -- Fuel tick time (every 250 msec)
+    refillTick = 250,
+
     -- Fuel usage multiplier based on class (default 1.0)
     classUsage = {
         [13] = 0.0, -- Cycles

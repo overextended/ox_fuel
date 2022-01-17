@@ -14,18 +14,27 @@ local function findClosestPump(coords, radius)
     return false
 end
 
+local function notify(message)
+    SetNotificationTextEntry('STRING')
+    AddTextComponentString(message)
+    DrawNotification(0,1)
+end
+
 for i = 1, #ox.stations do
     ox.stations[i]:onPlayerInOut(function(isInside)
         inStation = isInside
 
         if not ox.qtarget and not inStationInterval and isInside then
             inStationInterval = SetInterval(function()
-                local playerCoords = GetEntityCoords(PlayerPedId())
+                local ped = PlayerPedId()
+                local playerCoords = GetEntityCoords(ped)
+                local pumpObject = findClosestPump(playerCoords, 1.5)
 
-                -- TODO better check distance to pump
-                if IsPedInAnyVehicle(PlayerPedId()) and findClosestPump(playerCoords, 3) then
+                if not pumpObject then return end
+
+                if IsPedInAnyVehicle(ped) then
                     DisplayHelpTextThisFrame('fuelLeaveVehicleText', false)
-                elseif not isFueling and findClosestPump(playerCoords, 1) then
+                elseif not isFueling then
                     DisplayHelpTextThisFrame('fuelHelpText', false)
                 end
             end)
@@ -61,7 +70,7 @@ if ox.showBlips == 1 then
         for i = 1, #ox.stations do
             local station = ox.stations[i]
             local distance = #(playerCoords - station:getBoundingBoxCenter())
-            
+
             if not closestDistance or distance < closestDistance then
                 closestDistance = distance
                 closestStation = station
@@ -72,7 +81,7 @@ if ox.showBlips == 1 then
             if DoesBlipExist(currentBlip) then
                 RemoveBlip(currentBlip)
             end
-    
+
             local coords = closestStation:getBoundingBoxCenter()
             currentBlip = AddBlipForCoord(coords.x, coords.y, coords.z)
             SetBlipSprite(currentBlip, 415)
@@ -106,25 +115,32 @@ SetInterval(function()
 
     local newFuel = fuel and fuel - usage * multiplier or GetVehicleFuelLevel(vehicle)
 
-    if newFuel < 0 or newFuel > 100 then return end
+    if newFuel < 0 or newFuel > 100 then
+        newFuel = GetVehicleFuelLevel(vehicle)
+    end
 
     SetVehicleFuelLevel(vehicle, newFuel)
     Vehicle:set('fuel', newFuel, true)
 end, 1000)
 
 local function StartFueling(vehicle)
-    -- todo: refactor, make non ox-inventory
     isFueling = true
-    local tickCounter = 0
+
     local Vehicle = Entity(vehicle).state
-    local tickNumber = 10
-    local fuelAmount = Vehicle.fuel
-    local missingFuel = 100 - fuelAmount
-    local fuelingDuration = (math.ceil(missingFuel) / 2) * 1000
-    local tick = fuelingDuration / tickNumber
-    local fuelToAdd = missingFuel / fuelingDuration * tick -- Need better calculation, not 100% accurate
+    local fuel = Vehicle.fuel
+
+    if 100 - fuel < ox.refillValue then
+        return notify('Tank full')
+    end
+
+    local duration = math.ceil((100 - fuel) / ox.refillValue) * ox.refillTick
+
+    TaskTurnPedToFaceEntity(ped, vehicle, duration)
+
+    Wait(0)
+
     exports.ox_inventory:Progress({
-        duration = fuelingDuration,
+        duration = duration,
         label = 'Fueling vehicle',
         useWhileDead = false,
         canCancel = true,
@@ -140,32 +156,54 @@ local function StartFueling(vehicle)
             flags = 49,
         },
     }, function(cancel)
-        isFueling = false
+        if cancel then
+            isFueling = false
+        end
     end)
-    while tickCounter < tickNumber and isFueling do
-        Wait(tick)
-        Vehicle:set('fuel', Vehicle.fuel + fuelToAdd)
+
+    while isFueling do
+        fuel += ox.refillValue
+
+        if(fuel >= 100) then
+            isFueling = false
+            fuel = 100.0
+        end
+
+        Wait(ox.refillTick)
     end
+
+    Vehicle:set('fuel', fuel, true)
+    SetVehicleFuelLevel(vehicle, fuel)
+
+    -- DEBUG
+    notify(fuel)
 end
 
 RegisterCommand('startfueling', function()
     local ped = PlayerPedId()
 
-    if isFueling or not inStation or IsPedInAnyVehicle(ped) then return end
+    if not inStation or isFueling or IsPedInAnyVehicle(ped) then
+        print('skipping fuel -- debug')
+        return
+    end
 
     local playerCoords = GetEntityCoords(ped)
 
-    local pumpObject = findClosestPump(playerCoords, 1.7)
+    local pumpObject = findClosestPump(playerCoords, 1.5)
 
-    if not pumpObject then return end
+    if not pumpObject then
+        return notify('Move closer to pump')
+    end
 
     local vehicle = GetPlayersLastVehicle()
 
-    if vehicle ~= 0 and #(GetEntityCoords(vehicle) - playerCoords) < 1.7 then
-        TaskTurnPedToFaceEntity(ped, vehicle, -1)
-        StartFueling(vehicle)
+    if vehicle == 0 or #(GetEntityCoords(vehicle) - playerCoords) > 3 then
+        return notify('Vehicle far from pump')
     end
+
+    StartFueling(vehicle)
 end)
+
 RegisterKeyMapping('startfueling', 'Fuel vehicle', 'keyboard', 'e')
 TriggerEvent('chat:removeSuggestion', '/startfueling')
 AddTextEntry('fuelHelpText', 'Press ~INPUT_C2939D45~ to fuel')
