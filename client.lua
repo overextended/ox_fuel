@@ -135,9 +135,9 @@ local function StartFueling(vehicle)
 
     local duration = math.ceil((100 - fuel) / ox.refillValue) * ox.refillTick
 
-    TaskTurnPedToFaceEntity(ped, vehicle, duration)
+    TaskTurnPedToFaceEntity(PlayerPedId(), vehicle, 1500)
 
-    Wait(0)
+    Wait(1500)
 
     exports.ox_inventory:Progress({
         duration = duration,
