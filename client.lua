@@ -179,6 +179,30 @@ local function StartFueling(vehicle)
     notify(fuel)
 end
 
+if ox.qtarget then
+    AddEventHandler('ox_fuel:refuelVehicle', function(data)
+        local pumpObject = data.entity
+        local vehicle = GetPlayersLastVehicle()
+
+        if vehicle == 0 or #(GetEntityCoords(vehicle) - GetEntityCoords(pumpObject)) > 3 then
+            return notify('Vehicle far from pump')
+        end
+        StartFueling(vehicle)
+    end)
+
+    exports.qtarget:AddTargetModel(ox.pumpModels, {
+        options = {
+            {
+                event = 'ox_fuel:refuelVehicle',
+                icon = 'fas fa-gas-pump',
+                label = "Refuel vehicle",
+                canInteract = function() return not isFueling end
+            }
+        },
+        distance = 2
+    })
+end
+
 RegisterCommand('startfueling', function()
     local ped = PlayerPedId()
 
