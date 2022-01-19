@@ -16,9 +16,6 @@ ox = {
     -- What keys to disable while fueling
     disabledKeys = { 0, 22, 23, 24, 29, 30, 31, 37, 44, 56, 82, 140, 166, 167, 168, 170, 288, 289, 311, 323 },
 
-    -- Fuel cost
-    refillCost = 100,
-
     -- Total duration (ex. 10% missing fuel): 10 / 0.25 * 250 = 10 seconds
 
     -- Fuel refill value (every 250msec add 0.25%)
@@ -26,6 +23,9 @@ ox = {
 
     -- Fuel tick time (every 250 msec)
     refillTick = 250,
+
+    -- Fuel cost (Added once every tick)
+    priceTick = 5,
 
     -- Fuel usage multiplier based on class (default 1.0)
     classUsage = {

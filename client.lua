@@ -120,11 +120,14 @@ SetInterval(function()
     end
 
     SetVehicleFuelLevel(vehicle, newFuel)
+    print(newFuel) -- debug
     Vehicle:set('fuel', newFuel, true)
 end, 1000)
 
 local function StartFueling(vehicle)
     isFueling = true
+    local price = 0
+    local moneyAmount = exports.ox_inventory:Search(2, 'money')
 
     local Vehicle = Entity(vehicle).state
     local fuel = Vehicle.fuel
@@ -162,6 +165,13 @@ local function StartFueling(vehicle)
     end)
 
     while isFueling do
+        price += ox.priceTick
+
+        -- Commented out for debug
+        -- if price >= moneyAmount then
+        --     exports.ox_inventory:CancelProgress()
+        -- end
+
         fuel += ox.refillValue
 
         if(fuel >= 100) then
@@ -174,7 +184,7 @@ local function StartFueling(vehicle)
 
     Vehicle:set('fuel', fuel, true)
     SetVehicleFuelLevel(vehicle, fuel)
-
+    TriggerServerEvent('ox_fuel:pay', price)
     -- DEBUG
     notify(fuel)
 end
