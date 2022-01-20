@@ -27,6 +27,14 @@ ox = {
     -- Fuel cost (Added once every tick)
     priceTick = 5,
 
+    -- Enables fuel can 
+    petrolCan = {
+        enabled = true,
+        duration = 5000,
+        price = 1000,
+        refillPrice = 800,
+    },
+
     -- Fuel usage multiplier based on class (default 1.0)
     classUsage = {
         [13] = 0.0, -- Cycles
