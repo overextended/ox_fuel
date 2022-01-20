@@ -29,7 +29,7 @@ if ox.inventory then
     end)
 
     RegisterNetEvent('ox_fuel:fuelCan', function(hasCan, price)
-        local canCarry = ox_inventory.CanCarryItem(source, 'WEAPON_PETROLCAN', 1)
+        local canCarry = ox_inventory:CanCarryItem(source, 'WEAPON_PETROLCAN', 1)
         local money = ox_inventory:GetItem(source, 'money', false, true)
 
         if not canCarry then 
