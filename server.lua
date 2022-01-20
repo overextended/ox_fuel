@@ -29,15 +29,7 @@ if ox.inventory then
     end)
 
     RegisterNetEvent('ox_fuel:fuelCan', function(hasCan, price)
-        local canCarry = ox_inventory:CanCarryItem(source, 'WEAPON_PETROLCAN', 1)
         local money = ox_inventory:GetItem(source, 'money', false, true)
-
-        if not canCarry then 
-            return TriggerClientEvent('ox_inventory:notify', source, {
-                type = 'error',
-                text = ('You can\'t carry anymore stuff'):format(missingMoney)
-            }) 
-        end
 
         if not isMoneyEnough(money, price) then return false end
 
@@ -54,6 +46,15 @@ if ox.inventory then
             local petrolCan = exports.ox_inventory:GetItem(source, 'WEAPON_PETROLCAN', false, true)
 
             if petrolCan == 0 then
+                local canCarry = ox_inventory:CanCarryItem(source, 'WEAPON_PETROLCAN', 1)
+
+                if not canCarry then 
+                    return TriggerClientEvent('ox_inventory:notify', source, {
+                        type = 'error',
+                        text = ('You can\'t carry anymore stuff'):format(missingMoney)
+                    }) 
+                end
+                
                 ox_inventory:AddItem(source, 'WEAPON_PETROLCAN', 1)
 
                 ox_inventory:RemoveItem(source, 'money', price)
