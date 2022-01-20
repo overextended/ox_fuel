@@ -40,10 +40,10 @@ for i = 1, #ox.stations do
                     DisplayHelpTextThisFrame('fuelLeaveVehicleText', false)
                 elseif not isFueling then
                     local vehicle = GetPlayersLastVehicle()
-                    if isVehicleCloseEnough(playerCoords, vehicle) then
-                        DisplayHelpTextThisFrame('fuelHelpText', false)
-                    else
+                    if not isVehicleCloseEnough(playerCoords, vehicle) and ox.petrolCan.enabled then
                         DisplayHelpTextThisFrame('petrolcanHelpText', false)
+                    else
+                        DisplayHelpTextThisFrame('fuelHelpText', false)
                     end
                 end
             end)
@@ -254,10 +254,12 @@ RegisterCommand('startfueling', function()
 
     local vehicle = GetPlayersLastVehicle()
 
-    if isVehicleCloseEnough(playerCoords, vehicle) then
+    if not isVehicleCloseEnough(playerCoords, vehicle) and ox.petrolCan.enabled then
+        GetPetrolCan(pumpObject)
+    elseif isVehicleCloseEnough(playerCoords, vehicle) then
         StartFueling(vehicle)
     else
-        GetPetrolCan(pumpObject)
+        return notify('Vehicle far from pump')
     end
 end)
 
