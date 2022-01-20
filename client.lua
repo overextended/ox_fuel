@@ -203,9 +203,11 @@ local function GetPetrolCan(pumpObject)
     local ped = PlayerPedId()
     local petrolCan = exports.ox_inventory:Search('count', 'WEAPON_PETROLCAN')
 
+    LocalPlayer.state.invBusy = true
+
     TaskTurnPedToFaceEntity(ped, pumpObject, ox.petrolCan.duration)
 
-    Wait(0)
+    Wait(500)
 
     exports.ox_inventory:Progress({
         duration = ox.petrolCan.duration,
@@ -224,6 +226,7 @@ local function GetPetrolCan(pumpObject)
             flags = 49,
         },
     }, function(cancel)
+        LocalPlayer.state.invBusy = false
         if not cancel then
             if petrolCan > 0 then
                 return TriggerServerEvent('ox_fuel:fuelCan', true, ox.petrolCan.refillPrice)
