@@ -2,13 +2,20 @@ local inStation = false
 local isFueling = false
 local inStationInterval
 
-local function findClosestPump(coords, radius)
-    for i = 1, #ox.pumpModels do
-        local pumpObject = GetClosestObjectOfType(coords.x, coords.y, coords.z, radius, ox.pumpModels[i], false, false, false)
+local function findClosestPump(coords)
+    local closest = 1.5
+    local pump
 
-        if pumpObject ~= 0 then
-            return pumpObject
+    for i = 1, #pumps[inStation] do
+        local distance = #(coords - pumps[inStation][i])
+        if distance < closest then
+            closest = distance
+            pump = pumps[inStation][i]
         end
+    end
+
+    if closest < 1.5 then
+        return pump
     end
 
     return false
@@ -26,15 +33,14 @@ end
 
 for i = 1, #ox.stations do
     ox.stations[i]:onPlayerInOut(function(isInside)
-        inStation = isInside
+        inStation = isInside and i
 
         if not ox.qtarget and not inStationInterval and isInside then
             inStationInterval = SetInterval(function()
                 local ped = PlayerPedId()
                 local playerCoords = GetEntityCoords(ped)
-                local pumpObject = findClosestPump(playerCoords, 1.5)
-
-                if not pumpObject then return end
+                
+                if not findClosestPump(playerCoords, 1.5) then return end
 
                 if IsPedInAnyVehicle(ped) then
                     DisplayHelpTextThisFrame('fuelLeaveVehicleText', false)
@@ -161,7 +167,6 @@ local function StartFueling(vehicle)
             move = true,
             car = true,
             combat = true,
-            mouse = false
         },
         anim = {
             dict = 'timetable@gardener@filling_can',
@@ -249,9 +254,9 @@ RegisterCommand('startfueling', function()
 
     local playerCoords = GetEntityCoords(ped)
 
-    local pumpObject = findClosestPump(playerCoords, 1.5)
+    local isNearPump = findClosestPump(playerCoords)
 
-    if not pumpObject then
+    if not isNearPump then
         return notify('Move closer to pump')
     end
 

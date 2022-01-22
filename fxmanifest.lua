@@ -30,5 +30,6 @@ client_scripts {
 	'@PolyZone/client.lua',
 	'@PolyZone/BoxZone.lua',
 	'data/stations.lua',
+	'data/pumps.lua',
 	'client.lua'
 }
