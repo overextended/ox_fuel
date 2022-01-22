@@ -250,11 +250,6 @@ local function StartFuelingWithCan(vehicle)
 
         -- TODO: reduce can durability 
 
-        -- Commented out for debug
-        -- if price >= moneyAmount then
-        --     exports.ox_inventory:CancelProgress()
-        -- end
-
         fuel += ox.refillValue
 
         if(fuel >= 100) then
