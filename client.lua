@@ -204,13 +204,14 @@ local function StartFueling(vehicle)
     notify(fuel)
 end
 
-local function GetPetrolCan(pumpObject)
+local function GetPetrolCan(pumpCoord)
     local ped = PlayerPedId()
     local petrolCan = exports.ox_inventory:Search('count', 'WEAPON_PETROLCAN')
 
     LocalPlayer.state.invBusy = true
 
-    TaskTurnPedToFaceEntity(ped, pumpObject, ox.petrolCan.duration)
+    TaskTurnPedToFaceCoord(ped, pumpCoord, ox.petrolCan.duration) 
+    -- Linden broke this changing from entity too coord, needs a better solution
 
     Wait(500)
 
