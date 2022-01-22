@@ -1,6 +1,6 @@
 ox = {
     -- Enable support for ox_inventory
-	inventory = false,
+	inventory = true,
 
     -- Enable support for qTarget
     qtarget = false,

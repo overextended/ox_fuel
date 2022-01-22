@@ -151,6 +151,7 @@ local function StartFueling(vehicle)
     local fuel = Vehicle.fuel
 
     if 100 - fuel < ox.refillValue then
+        isFueling = false
         return notify('Tank full')
     end
 
@@ -158,7 +159,7 @@ local function StartFueling(vehicle)
 
     TaskTurnPedToFaceEntity(ped, vehicle, duration)
 
-    Wait(0)
+    Wait(500)
 
     exports.ox_inventory:Progress({
         duration = duration,
@@ -183,6 +184,71 @@ local function StartFueling(vehicle)
 
     while isFueling do
         price += ox.priceTick
+
+        -- Commented out for debug
+        -- if price >= moneyAmount then
+        --     exports.ox_inventory:CancelProgress()
+        -- end
+
+        fuel += ox.refillValue
+
+        if(fuel >= 100) then
+            isFueling = false
+            fuel = 100.0
+        end
+
+        Wait(ox.refillTick)
+    end
+
+    Vehicle:set('fuel', fuel, true)
+    SetVehicleFuelLevel(vehicle, fuel)
+    TriggerServerEvent('ox_fuel:pay', price)
+    -- DEBUG
+    notify(fuel)
+end
+
+local function StartFuelingWithCan(vehicle)
+    isFueling = true
+    local ped = PlayerPedId()
+
+    local Vehicle = Entity(vehicle).state
+    local fuel = Vehicle.fuel
+
+    if 100 - fuel < ox.refillValue then
+        isFueling = false
+        return notify('Tank full')
+    end
+
+    local duration = math.ceil((100 - fuel) / ox.refillValue) * ox.refillTick
+
+    TaskTurnPedToFaceEntity(ped, vehicle, duration)
+
+    Wait(500)
+
+    exports.ox_inventory:Progress({
+        duration = duration,
+        label = 'Fueling vehicle with Can',
+        useWhileDead = false,
+        canCancel = true,
+        disable = {
+            move = true,
+            car = true,
+            combat = true,
+        },
+        anim = {
+            dict = 'timetable@gardener@filling_can',
+            clip = 'gar_ig_5_filling_can',
+            flags = 49,
+        },
+    }, function(cancel)
+        if cancel then
+            isFueling = false
+        end
+    end)
+
+    while isFueling do
+
+        -- TODO: reduce can durability 
 
         -- Commented out for debug
         -- if price >= moneyAmount then
@@ -249,21 +315,12 @@ end
 
 RegisterCommand('startfueling', function()
     local ped = PlayerPedId()
-
-    if not inStation or isFueling or IsPedInAnyVehicle(ped) then
-        print('skipping fuel -- debug')
-        return
-    end
-
+    local vehicle = GetPlayersLastVehicle()
     local playerCoords = GetEntityCoords(ped)
-
     local isNearPump = findClosestPump(playerCoords)
 
-    if not isNearPump then
-        return notify('Move closer to pump')
-    end
-
-    local vehicle = GetPlayersLastVehicle()
+    if not inStation or isFueling or IsPedInAnyVehicle(ped) then return print('skipping fuel -- debug')  end
+    if not isNearPump then return notify('Move closer to pump') end
 
     if not isVehicleCloseEnough(playerCoords, vehicle) and ox.petrolCan.enabled then
         GetPetrolCan(isNearPump)
@@ -274,8 +331,27 @@ RegisterCommand('startfueling', function()
     end
 end)
 
+RegisterCommand('startfuelingwithcan', function()
+    local ped = PlayerPedId()
+    local vehicle = GetPlayersLastVehicle()
+    local petrolCan = GetSelectedPedWeapon(ped) == `WEAPON_PETROLCAN` and true or false
+    local playerCoords = GetEntityCoords(ped)
+    local isNearPump = findClosestPump(playerCoords)
+
+    if not ox.petrolCan.enabled or isFueling or IsPedInAnyVehicle(ped) or not petrolCan or isNearPump then return print('skipping fuel with can -- debug') end
+
+    if isVehicleCloseEnough(playerCoords, vehicle) then
+        StartFuelingWithCan(vehicle)
+    else
+        return notify('Vehicle far from you')
+    end
+end)
+
 RegisterKeyMapping('startfueling', 'Fuel vehicle', 'keyboard', 'e')
 TriggerEvent('chat:removeSuggestion', '/startfueling')
+RegisterKeyMapping('startfuelingwithcan', 'Fuel vehicle with Can', 'keyboard', 'e')
+TriggerEvent('chat:removeSuggestion', '/startfuelingwithcan')
 AddTextEntry('fuelHelpText', 'Press ~INPUT_C2939D45~ to fuel')
+AddTextEntry('fuelWithCanHelpText', 'Press ~INPUT_C2939D45~ to fuel with Can')
 AddTextEntry('petrolcanHelpText', 'Press ~INPUT_C2939D45~ to buy or refill a fuel can')
 AddTextEntry('fuelLeaveVehicleText', 'Leave the vehicle to be able to start fueling')
