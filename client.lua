@@ -263,7 +263,7 @@ RegisterCommand('startfueling', function()
     local vehicle = GetPlayersLastVehicle()
 
     if not isVehicleCloseEnough(playerCoords, vehicle) and ox.petrolCan.enabled then
-        GetPetrolCan(pumpObject)
+        GetPetrolCan(isNearPump)
     elseif isVehicleCloseEnough(playerCoords, vehicle) then
         StartFueling(vehicle)
     else
