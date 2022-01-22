@@ -6,6 +6,8 @@ local function findClosestPump(coords)
     local closest = 1.5
     local pump
 
+    if not pumps[inStation] then return false end
+
     for i = 1, #pumps[inStation] do
         local distance = #(coords - pumps[inStation][i])
         if distance < closest then
