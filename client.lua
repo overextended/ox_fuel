@@ -24,7 +24,7 @@ local function findClosestPump(coords)
 end
 
 local function isVehicleCloseEnough(playerCoords, vehicle)
-    return false or #(GetEntityCoords(vehicle) - playerCoords) <= 3
+    return #(GetEntityCoords(vehicle) - playerCoords) <= 3 or false
 end
 
 local function notify(message)
