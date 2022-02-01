@@ -264,15 +264,18 @@ RegisterCommand('startfueling', function()
     local petrolCan = GetSelectedPedWeapon(ped) == `WEAPON_PETROLCAN` and true or false
     local playerCoords = GetEntityCoords(ped)
     local isNearPump = findClosestPump(playerCoords)
+    local moneyAmount = ox.inventory and exports.ox_inventory:Search(2, 'money') or 0
 
     if not petrolCan then
         if not inStation or isFueling or IsPedInAnyVehicle(ped) then return print('skipping fuel -- debug')  end
         if not isNearPump then return notify('Move closer to pump') end
     
         if not isVehicleCloseEnough(playerCoords, vehicle) and ox.petrolCan.enabled then
-            GetPetrolCan(isNearPump)
+            if not ox.inventory then return GetPetrolCan(isNearPump) end
+            if moneyAmount >= ox.petrolCan.price then GetPetrolCan(isNearPump) end
         elseif isVehicleCloseEnough(playerCoords, vehicle) then
-            StartFueling(vehicle, 'pump')
+            if not ox.inventory then return StartFueling(vehicle, 'pump') end
+            if moneyAmount >= ox.priceTick then StartFueling(vehicle, 'pump') end
         else
             return notify('Vehicle far from pump')
         end
