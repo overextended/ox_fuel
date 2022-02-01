@@ -3,8 +3,10 @@ local isFueling = false
 local inStationInterval
 
 local function findClosestPump(coords)
-    local closest = 1.5
+    local closest = 3
     local pump
+
+    if not pumps[inStation] then return false end
 
     for i = 1, #pumps[inStation] do
         local distance = #(coords - pumps[inStation][i])
@@ -14,11 +16,15 @@ local function findClosestPump(coords)
         end
     end
 
-    if closest < 1.5 then
+    if closest < 3 then
         return pump
     end
 
     return false
+end
+
+local function isVehicleCloseEnough(playerCoords, vehicle)
+    return #(GetEntityCoords(vehicle) - playerCoords) <= 3 or false
 end
 
 local function notify(message)
@@ -36,12 +42,17 @@ for i = 1, #ox.stations do
                 local ped = PlayerPedId()
                 local playerCoords = GetEntityCoords(ped)
                 
-                if not findClosestPump(playerCoords, 1.5) then return end
+                if not findClosestPump(playerCoords) then return end
 
                 if IsPedInAnyVehicle(ped) then
                     DisplayHelpTextThisFrame('fuelLeaveVehicleText', false)
                 elseif not isFueling then
-                    DisplayHelpTextThisFrame('fuelHelpText', false)
+                    local vehicle = GetPlayersLastVehicle()
+                    if not isVehicleCloseEnough(playerCoords, vehicle) and ox.petrolCan.enabled then
+                        DisplayHelpTextThisFrame('petrolcanHelpText', false)
+                    else
+                        DisplayHelpTextThisFrame('fuelHelpText', false)
+                    end
                 end
             end)
         elseif not isInside and inStationInterval then
@@ -130,23 +141,27 @@ SetInterval(function()
     Vehicle:set('fuel', newFuel, true)
 end, 1000)
 
-local function StartFueling(vehicle)
+local function StartFueling(vehicle, fuelingMode)
     isFueling = true
-    local price = 0
-    local moneyAmount = exports.ox_inventory:Search(2, 'money')
-
+    local ped = PlayerPedId()
     local Vehicle = Entity(vehicle).state
     local fuel = Vehicle.fuel
+    local duration = math.ceil((100 - fuel) / ox.refillValue) * ox.refillTick
+    local price, moneyAmount 
 
     if 100 - fuel < ox.refillValue then
+        isFueling = false
         return notify('Tank full')
     end
 
-    local duration = math.ceil((100 - fuel) / ox.refillValue) * ox.refillTick
-
+    if fuelingMode == 'pump' then 
+        price = 0
+        moneyAmount = exports.ox_inventory:Search(2, 'money')
+    end
+    
     TaskTurnPedToFaceEntity(ped, vehicle, duration)
 
-    Wait(0)
+    Wait(500)
 
     exports.ox_inventory:Progress({
         duration = duration,
@@ -170,7 +185,6 @@ local function StartFueling(vehicle)
     end)
 
     while isFueling do
-        price += ox.priceTick
 
         -- Commented out for debug
         -- if price >= moneyAmount then
@@ -178,7 +192,17 @@ local function StartFueling(vehicle)
         -- end
 
         fuel += ox.refillValue
+        
+        if fuelingMode == 'pump' then 
+            price += ox.priceTick 
+        end
 
+        if fuelingMode == 'can' then 
+            -- reduce can durability
+        end
+
+        -- if can durability is 0, keep fuel at current level and isFueling false
+        -- elseif...
         if(fuel >= 100) then
             isFueling = false
             fuel = 100.0
@@ -189,37 +213,83 @@ local function StartFueling(vehicle)
 
     Vehicle:set('fuel', fuel, true)
     SetVehicleFuelLevel(vehicle, fuel)
-    TriggerServerEvent('ox_fuel:pay', price)
+    if fuelingMode == 'pump' then TriggerServerEvent('ox_fuel:pay', price) end 
     -- DEBUG
     notify(fuel)
 end
 
+local function GetPetrolCan(pumpCoord)
+    local ped = PlayerPedId()
+    local petrolCan = exports.ox_inventory:Search('count', 'WEAPON_PETROLCAN')
+
+    LocalPlayer.state.invBusy = true
+
+    TaskTurnPedToFaceCoord(ped, pumpCoord, ox.petrolCan.duration) 
+    -- Linden broke this changing from entity too coord, needs a better solution
+
+    Wait(500)
+
+    exports.ox_inventory:Progress({
+        duration = ox.petrolCan.duration,
+        label = 'Fueling can',
+        useWhileDead = false,
+        canCancel = true,
+        disable = {
+            move = true,
+            car = true,
+            combat = true,
+        },
+        anim = {
+            dict = 'timetable@gardener@filling_can',
+            clip = 'gar_ig_5_filling_can',
+            flags = 49,
+        },
+    }, function(cancel)
+        LocalPlayer.state.invBusy = false
+        if not cancel then
+            if petrolCan > 0 then
+                return TriggerServerEvent('ox_fuel:fuelCan', true, ox.petrolCan.refillPrice)
+            else 
+                return TriggerServerEvent('ox_fuel:fuelCan', false, ox.petrolCan.price)
+            end
+        else
+            return false
+        end
+    end)
+end
+
 RegisterCommand('startfueling', function()
     local ped = PlayerPedId()
-
-    if not inStation or isFueling or IsPedInAnyVehicle(ped) then
-        print('skipping fuel -- debug')
-        return
-    end
-
+    local vehicle = GetPlayersLastVehicle()
+    local petrolCan = GetSelectedPedWeapon(ped) == `WEAPON_PETROLCAN` and true or false
     local playerCoords = GetEntityCoords(ped)
-
     local isNearPump = findClosestPump(playerCoords)
 
-    if not isNearPump then
-        return notify('Move closer to pump')
+    if not petrolCan then
+        if not inStation or isFueling or IsPedInAnyVehicle(ped) then return print('skipping fuel -- debug')  end
+        if not isNearPump then return notify('Move closer to pump') end
+    
+        if not isVehicleCloseEnough(playerCoords, vehicle) and ox.petrolCan.enabled then
+            GetPetrolCan(isNearPump)
+        elseif isVehicleCloseEnough(playerCoords, vehicle) then
+            StartFueling(vehicle, 'pump')
+        else
+            return notify('Vehicle far from pump')
+        end
+    else
+        if not ox.petrolCan.enabled or isFueling or IsPedInAnyVehicle(ped) then return print('skipping fuel with can -- debug') end
+        if isNearPump then return notify('Put your can away before fueling with the pump') end
+
+        if isVehicleCloseEnough(playerCoords, vehicle) then
+            StartFueling(vehicle, 'can')
+        else
+            return notify('Vehicle far from you')
+        end
     end
-
-    local vehicle = GetPlayersLastVehicle()
-
-    if vehicle == 0 or #(GetEntityCoords(vehicle) - playerCoords) > 3 then
-        return notify('Vehicle far from pump')
-    end
-
-    StartFueling(vehicle)
 end)
 
 RegisterKeyMapping('startfueling', 'Fuel vehicle', 'keyboard', 'e')
 TriggerEvent('chat:removeSuggestion', '/startfueling')
 AddTextEntry('fuelHelpText', 'Press ~INPUT_C2939D45~ to fuel')
+AddTextEntry('petrolcanHelpText', 'Press ~INPUT_C2939D45~ to buy or refill a fuel can')
 AddTextEntry('fuelLeaveVehicleText', 'Leave the vehicle to be able to start fueling')
