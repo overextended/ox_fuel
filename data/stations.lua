@@ -219,18 +219,3 @@ local stations = {
         maxZ = 34.48
     }
 }
-
-if(not IsDuplicityVersion()) then
-    ox.stations = {}
-
-    for i = 1, #stations do
-        local station = stations[i]
-        ox.stations[i] = BoxZone:Create(station.coords, station.length, station.width, {
-            name = ('station-%s'):format(i),
-            heading = station.heading,
-            minZ = station.minZ,
-            maxZ = station.maxZ,
-            --debugPoly = true
-        })
-    end
-end

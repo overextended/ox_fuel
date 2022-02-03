@@ -33,6 +33,19 @@ local function notify(message)
     DrawNotification(0,1)
 end
 
+-- Moved here from stations.lua because client / server reasons.
+ox.stations = {}
+for i = 1, #stations do
+    local station = stations[i]
+    ox.stations[i] = BoxZone:Create(station.coords, station.length, station.width, {
+        name = ('station-%s'):format(i),
+        heading = station.heading,
+        minZ = station.minZ,
+        maxZ = station.maxZ,
+        --debugPoly = true
+    })
+end
+
 for i = 1, #ox.stations do
     ox.stations[i]:onPlayerInOut(function(isInside)
         inStation = isInside and i
