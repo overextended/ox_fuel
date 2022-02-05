@@ -1,8 +1,15 @@
 if ox.inventory then
     local ox_inventory = exports.ox_inventory
+    local cooldowns = {}
 
     local function isNearUnit(id, unitType)
         assert(type(id) == "number", "ID isn't number.")
+        if(cooldowns[id]) then
+            return false
+        else
+            cooldowns[id] = true
+            SetTimeout(2000, function() cooldowns[id] = nil end)
+        end
         local ped = GetPlayerPed(id)
         local coords = GetEntityCoords(ped)
         local unitDist = 15000.0
