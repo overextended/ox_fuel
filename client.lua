@@ -201,7 +201,9 @@ local function StartFueling(vehicle, fuelingMode)
 			if price >= moneyAmount then
 				exports.ox_inventory:CancelProgress()
 			end
-	    elseif fuelingMode == 'can' then
+        end
+        
+	    if fuelingMode == 'can' then
 	        if candeduction >= fuelCanAmount then
                 TriggerEvent('ox_inventory:disarm')
 				exports.ox_inventory:CancelProgress()
