@@ -27,6 +27,28 @@ if ox.inventory then
             text = ('Paid %s'):format(price)
         })
     end)
+    
+    RegisterNetEvent('ox_fuel:candeduction', function(slot, amount)
+	    local fuelcan = ox_inventory:Search(source, 'slots', 'WEAPON_PETROLCAN')
+		for _, v in pairs(fuelcan) do
+			if v.slot == slot then
+				fuelcan = v
+			end
+		end
+		if fuelcan.metadata.durability - amount < 0 then
+		    fuelcan.metadata.durability = 0
+		    else
+		    fuelcan.metadata.durability = fuelcan.metadata.durability - amount
+		end
+		if fuelcan.metadata.ammo ~= nil then
+		    if fuelcan.metadata.ammo - amount < 0 then
+			    fuelcan.metadata.ammo = 0
+			else
+		        fuelcan.metadata.ammo = fuelcan.metadata.ammo - amount
+		    end
+		end
+        exports.ox_inventory:SetMetadata(source, slot, fuelcan.metadata)
+    end)
 
     RegisterNetEvent('ox_fuel:fuelCan', function(hasCan, price)
         local money = ox_inventory:GetItem(source, 'money', false, true)

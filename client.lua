@@ -146,8 +146,9 @@ local function StartFueling(vehicle, fuelingMode)
     local ped = PlayerPedId()
     local Vehicle = Entity(vehicle).state
     local fuel = Vehicle.fuel
+    local candeduction = 0
     local duration = math.ceil((100 - fuel) / ox.refillValue) * ox.refillTick
-    local price, moneyAmount 
+    local price, moneyAmount, fuelCanAmount
 
     if 100 - fuel < ox.refillValue then
         isFueling = false
@@ -157,6 +158,16 @@ local function StartFueling(vehicle, fuelingMode)
     if fuelingMode == 'pump' then 
         price = 0
         moneyAmount = exports.ox_inventory:Search(2, 'money')
+    end
+
+    if fuelingMode == 'can' then 
+        local fuelcan = exports.ox_inventory:Search('slots', 'WEAPON_PETROLCAN')
+		for _, v in pairs(fuelcan) do
+		    if v.slot == fuelcanslot then
+			fuelcan = v
+			end
+		end
+		fuelCanAmount = fuelcan.metadata.durability
     end
     
     TaskTurnPedToFaceEntity(ped, vehicle, duration)
@@ -186,10 +197,17 @@ local function StartFueling(vehicle, fuelingMode)
 
     while isFueling do
 
-        -- Commented out for debug
-        -- if price >= moneyAmount then
-        --     exports.ox_inventory:CancelProgress()
-        -- end
+	    if fuelingMode == 'pump' then
+			if price >= moneyAmount then
+				exports.ox_inventory:CancelProgress()
+			end
+	    elseif fuelingMode == 'can' then
+	        if candeduction >= fuelCanAmount then
+                TriggerEvent('ox_inventory:disarm')
+				exports.ox_inventory:CancelProgress()
+				-- notify of empty can?
+			end
+		end
 
         fuel += ox.refillValue
         
@@ -198,11 +216,9 @@ local function StartFueling(vehicle, fuelingMode)
         end
 
         if fuelingMode == 'can' then 
-            -- reduce can durability
+            candeduction += ox.refillValue
         end
 
-        -- if can durability is 0, keep fuel at current level and isFueling false
-        -- elseif...
         if(fuel >= 100) then
             isFueling = false
             fuel = 100.0
@@ -213,7 +229,8 @@ local function StartFueling(vehicle, fuelingMode)
 
     Vehicle:set('fuel', fuel, true)
     SetVehicleFuelLevel(vehicle, fuel)
-    if fuelingMode == 'pump' then TriggerServerEvent('ox_fuel:pay', price) end 
+    if fuelingMode == 'pump' then TriggerServerEvent('ox_fuel:pay', price) end
+    if fuelingMode == 'can' then TriggerServerEvent('ox_fuel:candeduction', fuelcanslot, candeduction) end
     -- DEBUG
     notify(fuel)
 end
@@ -257,6 +274,14 @@ local function GetPetrolCan(pumpCoord)
         end
     end)
 end
+
+AddEventHandler('ox_inventory:currentWeapon', function(currentWeapon)
+    if currentWeapon ~= nil then
+	   if currentWeapon.name == 'WEAPON_PETROLCAN' then
+       fuelcanslot = currentWeapon.slot
+	   end
+	end
+end)
 
 RegisterCommand('startfueling', function()
     local ped = PlayerPedId()
