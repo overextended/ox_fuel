@@ -18,7 +18,7 @@ dependencies {
 }
 
 shared_scripts {
-	'config.lua'
+	'config.lua',
 	'data/stations.lua',
 	'data/pumps.lua',
 }
