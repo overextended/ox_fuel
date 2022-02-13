@@ -1,4 +1,4 @@
-if ox.inventory then
+if Config.inventory then
     local ox_inventory = exports.ox_inventory
 
     local function isMoneyEnough(money, price)
@@ -34,14 +34,19 @@ if ox.inventory then
         if not isMoneyEnough(money, price) then return false end
 
         if hasCan then
-            ox_inventory:RemoveItem(source, 'WEAPON_PETROLCAN', 1)
-            ox_inventory:AddItem(source, 'WEAPON_PETROLCAN', 1)
+            local item = ox_inventory:Search(source, 'slots', 'WEAPON_PETROLCAN')
+            if item then
+                item = item[1]
+                item.metadata.durability = 100
+                item.metadata.ammo = 100
 
-            ox_inventory:RemoveItem(source, 'money', price)
-            TriggerClientEvent('ox_inventory:notify', source, {
-                type = 'success',
-                text = ('Paid %s for refilling your fuel can'):format(price)
-            })
+                ox_inventory:SetMetadata(source, item.slot, item.metadata)
+                ox_inventory:RemoveItem(source, 'money', price)
+                TriggerClientEvent('ox_inventory:notify', source, {
+                    type = 'success',
+                    text = ('Paid %s for refilling your fuel can'):format(price)
+                })
+            end
         else
             local petrolCan = exports.ox_inventory:GetItem(source, 'WEAPON_PETROLCAN', false, true)
 
@@ -54,7 +59,7 @@ if ox.inventory then
                         text = ('You can\'t carry anymore stuff'):format(missingMoney)
                     }) 
                 end
-                
+
                 ox_inventory:AddItem(source, 'WEAPON_PETROLCAN', 1)
 
                 ox_inventory:RemoveItem(source, 'money', price)
