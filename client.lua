@@ -116,7 +116,7 @@ end)
 
 if Config.showBlips == 2 then
 	for station in pairs(stations) do
-		AddBlipForCoord(station.x, station.y, station.z)
+		local blip = AddBlipForCoord(station.x, station.y, station.z)
 		SetBlipSprite(blip, 415)
 		SetBlipDisplay(blip, 4)
 		SetBlipScale(blip, 0.6)
