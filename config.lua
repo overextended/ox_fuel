@@ -1,7 +1,4 @@
 Config = {
-	-- Enable support for ox_inventory
-	inventory = true,
-
 	-- Enable support for qTarget
 	qtarget = false,
 

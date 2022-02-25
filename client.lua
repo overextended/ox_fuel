@@ -30,6 +30,7 @@ CreateThread(function()
 
 			SetVehicleFuelLevel(vehicle, newFuel)
 			Vehicle:set('fuel', newFuel, true)
+			print(newFuel)
 		end
 
 		Wait(1000)
@@ -128,6 +129,8 @@ if Config.showBlips == 2 then
 	end
 end
 
+-- fuelingMode = 1 - Pump
+-- fuelingMode = 2 - Can
 local function StartFueling(vehicle, fuelingMode)
 	isFueling = true
 	local Vehicle = Entity(vehicle).state
@@ -172,10 +175,9 @@ local function StartFueling(vehicle, fuelingMode)
 
 	while isFueling do
 
-		-- Commented out for debug
-		-- if price >= moneyAmount then
-		--	 exports.ox_inventory:CancelProgress()
-		-- end
+		if price >= moneyAmount then
+			exports.ox_inventory:CancelProgress()
+		end
 
 		fuel += Config.refillValue
 
@@ -247,27 +249,19 @@ RegisterCommand('startfueling', function()
 	local vehicle = GetPlayersLastVehicle()
 	local petrolCan = GetSelectedPedWeapon(playerPed) == `WEAPON_PETROLCAN`
 	local playerCoords = GetEntityCoords(playerPed)
-	local moneyAmount = Config.inventory and exports.ox_inventory:Search(2, 'money') or 0
+	local moneyAmount = exports.ox_inventory:Search(2, 'money')
 
 	if not petrolCan then
 		if not inStation or isFueling or IsPedInAnyVehicle(playerPed) then return end
 		if not nearestPump then return notify('There are no fuel pumps nearby') end
 
 		if not isVehicleCloseEnough(playerCoords, vehicle) and Config.petrolCan.enabled then
-			if not Config.inventory then
-				return GetPetrolCan(nearestPump)
-			end
-
 			if moneyAmount >= Config.petrolCan.price then
 				GetPetrolCan(nearestPump)
 			else
 				notify('You cannot afford a petrol can')
 			end
 		elseif isVehicleCloseEnough(playerCoords, vehicle) then
-			if not Config.inventory then
-				return StartFueling(vehicle, 1)
-			end
-
 			if moneyAmount >= Config.priceTick then
 				StartFueling(vehicle, 1)
 			else
