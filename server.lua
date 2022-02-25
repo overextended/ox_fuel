@@ -13,17 +13,15 @@ local function isMoneyEnough(money, price)
 	end
 end
 
-RegisterNetEvent('ox_fuel:pay', function(price)
+RegisterNetEvent('ox_fuel:pay', function(price, fuel)
 	assert(type(price) == 'number', ('Price expected a number, received %s'):format(type(price)))
-
-	local money = ox_inventory:GetItem(source, 'money', false, true)
-
-	if not isMoneyEnough(money, price) then return false end
-
+	
 	ox_inventory:RemoveItem(source, 'money', price)
+
+	fuel = math.floor(fuel)
 	TriggerClientEvent('ox_inventory:notify', source, {
 		type = 'success',
-		text = ('Paid %s'):format(price)
+		text = ('Fueled to ' .. fuel .. '% ' .. '- $' .. price)
 	})
 end)
 
@@ -43,7 +41,7 @@ RegisterNetEvent('ox_fuel:fuelCan', function(hasCan, price)
 			ox_inventory:RemoveItem(source, 'money', price)
 			TriggerClientEvent('ox_inventory:notify', source, {
 				type = 'success',
-				text = ('Paid %s for refilling your fuel can'):format(price)
+				text = ('Paid $%s for refilling your fuel can'):format(price)
 			})
 		end
 	else
@@ -64,7 +62,7 @@ RegisterNetEvent('ox_fuel:fuelCan', function(hasCan, price)
 			ox_inventory:RemoveItem(source, 'money', price)
 			TriggerClientEvent('ox_inventory:notify', source, {
 				type = 'success',
-				text = ('Paid %s for buying a fuel can'):format(price)
+				text = ('Paid $%s for buying a fuel can'):format(price)
 			})
 		else
 			-- manually triggered event, cheating?

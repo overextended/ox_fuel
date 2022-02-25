@@ -201,7 +201,7 @@ local function StartFueling(vehicle, fuelingMode)
 
 	Vehicle:set('fuel', fuel, true)
 	SetVehicleFuelLevel(vehicle, fuel)
-	if fuelingMode == 1 then TriggerServerEvent('ox_fuel:pay', price) end
+	if fuelingMode == 1 then TriggerServerEvent('ox_fuel:pay', price, fuel) end
 	-- DEBUG
 	notify(fuel)
 end
