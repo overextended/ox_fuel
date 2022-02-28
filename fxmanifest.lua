@@ -13,7 +13,6 @@ description  'Fuel management system with ox_inventory support'
 
 --[[ Manifest ]]--
 dependencies {
-	'pe-lualib',
 	'PolyZone'
 }
 
@@ -26,7 +25,7 @@ server_scripts {
 }
 
 client_scripts {
-	'@pe-lualib/init.lua',
+	'@ox_lib/init.lua',
 	'data/stations.lua',
 	'client.lua'
 }
