@@ -24,6 +24,9 @@ Config = {
 	-- Fuel cost (Added once every tick)
 	priceTick = 5,
 
+	-- Can durability loss per refillTick
+	durabilityTick = 1.3,
+
 	-- Enables fuel can 
 	petrolCan = {
 		enabled = true,

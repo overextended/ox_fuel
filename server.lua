@@ -69,3 +69,10 @@ RegisterNetEvent('ox_fuel:fuelCan', function(hasCan, price)
 		end
 	end
 end)
+
+RegisterNetEvent('ox_fuel:UpdateCanDurability', function(fuelingCan, durability)
+	durability = math.floor(durability)
+	fuelingCan.metadata.durability = durability
+	fuelingCan.metadata.ammo = durability
+	exports.ox_inventory:SetMetadata(source, fuelingCan.slot, fuelingCan.metadata)
+end)

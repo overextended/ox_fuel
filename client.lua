@@ -1,3 +1,13 @@
+local fuelingCan = nil
+
+AddEventHandler('ox_inventory:currentWeapon', function(currentWeapon)
+	if currentWeapon and currentWeapon.name == 'WEAPON_PETROLCAN' then
+		fuelingCan = currentWeapon
+	else
+		fuelingCan = nil
+	end
+end)
+
 local function isVehicleCloseEnough(playerCoords, vehicle)
 	return #(GetEntityCoords(vehicle) - playerCoords) <= 3
 end
@@ -137,6 +147,7 @@ local function StartFueling(vehicle, fuelingMode)
 	local fuel = Vehicle.fuel
 	local duration = math.ceil((100 - fuel) / Config.refillValue) * Config.refillTick
 	local price, moneyAmount
+	local durability = 0
 
 	if 100 - fuel < Config.refillValue then
 		isFueling = false
@@ -175,22 +186,24 @@ local function StartFueling(vehicle, fuelingMode)
 
 	while isFueling do
 
-		if price >= moneyAmount then
-			exports.ox_inventory:CancelProgress()
+		if fuelingMode == 1 then
+			price += Config.priceTick
+			if price >= moneyAmount then
+				exports.ox_inventory:CancelProgress()
+			end
+		end
+
+		if fuelingMode == 2 then
+			durability += Config.durabilityTick
+			if durability >= fuelingCan.metadata.ammo then
+				exports.ox_inventory:CancelProgress()
+				TriggerEvent('ox_inventory:disarm')
+				TriggerServerEvent('ox_fuel:UpdateCanDurability', fuelingCan, 0)
+			end
 		end
 
 		fuel += Config.refillValue
 
-		if fuelingMode == 1 then
-			price += Config.priceTick
-		end
-
-		if fuelingMode == 2 then
-			-- reduce can durability
-		end
-
-		-- if can durability is 0, keep fuel at current level and isFueling false
-		-- elseif...
 		if fuel >= 100 then
 			isFueling = false
 			fuel = 100.0
@@ -199,9 +212,11 @@ local function StartFueling(vehicle, fuelingMode)
 		Wait(Config.refillTick)
 	end
 
+	print(fuel)
 	Vehicle:set('fuel', fuel, true)
 	SetVehicleFuelLevel(vehicle, fuel)
 	if fuelingMode == 1 then TriggerServerEvent('ox_fuel:pay', price, fuel) end
+	if fuelingMode == 2 then TriggerServerEvent('ox_fuel:UpdateCanDurability', fuelingCan, fuelingCan.metadata.ammo - durability) end
 	-- DEBUG
 	notify(fuel)
 end
@@ -210,7 +225,6 @@ local function GetPetrolCan(pumpCoord)
 	local petrolCan = exports.ox_inventory:Search('count', 'WEAPON_PETROLCAN')
 	LocalPlayer.state.invBusy = true
 
-	
 	TaskTurnPedToFaceCoord(playerPed, pumpCoord, Config.petrolCan.duration)
 	-- Linden broke this changing from entity too coord, needs a better solution
 
@@ -275,6 +289,7 @@ RegisterCommand('startfueling', function()
 		if nearestPump then return notify('Put your can away before fueling with the pump') end
 
 		if isVehicleCloseEnough(playerCoords, vehicle) then
+			if fuelingCan.metadata.ammo <= Config.durabilityTick then return end
 			StartFueling(vehicle, 2)
 		else
 			return notify('Your vehicle is too far away')
