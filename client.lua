@@ -53,6 +53,9 @@ local isFueling = false
 CreateThread(function()
 	local blip
 
+	if Config.qtarget and Config.showBlips ~= 1 then
+		return
+	end
 	while true do
 		local playerCoords = GetEntityCoords(playerPed)
 
@@ -71,57 +74,59 @@ CreateThread(function()
 					EndTextCommandSetBlipName(blip)
 				end
 
-				repeat
-					if stationDistance < 15 then
-						inStation = true
-						local pumpDistance
+				if not Config.qtarget then
+					repeat
+						if stationDistance < 15 then
+							inStation = true
+							local pumpDistance
 
-						repeat
-							playerCoords = GetEntityCoords(playerPed)
-							for i = 1, #pumps do
-								local pump = pumps[i]
-								pumpDistance = #(playerCoords - pump)
+							repeat
+								playerCoords = GetEntityCoords(playerPed)
+								for i = 1, #pumps do
+									local pump = pumps[i]
+									pumpDistance = #(playerCoords - pump)
 
-								if pumpDistance < 3 then
-									nearestPump = pump
+									if pumpDistance < 3 then
+										nearestPump = pump
 
-									while pumpDistance < 3 do
-										if IsPedInAnyVehicle(playerPed) then
-											DisplayHelpTextThisFrame('fuelLeaveVehicleText', false)
-										elseif not isFueling then
-											local vehicle = GetPlayersLastVehicle()
-											if not isVehicleCloseEnough(playerCoords, vehicle) and Config.petrolCan.enabled then
-												DisplayHelpTextThisFrame('petrolcanHelpText', false)
-											else
-												DisplayHelpTextThisFrame('fuelHelpText', false)
+										while pumpDistance < 3 do
+											if IsPedInAnyVehicle(playerPed) then
+												DisplayHelpTextThisFrame('fuelLeaveVehicleText', false)
+											elseif not isFueling then
+												local vehicle = GetPlayersLastVehicle()
+												if not isVehicleCloseEnough(playerCoords, vehicle) and Config.petrolCan.enabled then
+													DisplayHelpTextThisFrame('petrolcanHelpText', false)
+												else
+													DisplayHelpTextThisFrame('fuelHelpText', false)
+												end
 											end
+
+											pumpDistance = #(GetEntityCoords(playerPed) - pump)
+											Wait(0)
 										end
 
-										pumpDistance = #(GetEntityCoords(playerPed) - pump)
-										Wait(0)
+										nearestPump = nil
 									end
-
-									nearestPump = nil
 								end
-							end
-							Wait(100)
-						until pumpDistance > 15
-						break
-					end
+								Wait(100)
+							until pumpDistance > 15
+							break
+						end
 
-					Wait(100)
-					inStation = false
-					stationDistance = #(GetEntityCoords(playerPed) - station)
-				until stationDistance > 60
+						Wait(100)
+						inStation = false
+						stationDistance = #(GetEntityCoords(playerPed) - station)
+					until stationDistance > 60
+				end
 			end
 		end
 
+
+		Wait(500)
 		if blip then
 			RemoveBlip(blip)
 			blip = nil
 		end
-
-		Wait(500)
 	end
 end)
 
@@ -259,46 +264,109 @@ local function GetPetrolCan(pumpCoord)
 	end)
 end
 
-RegisterCommand('startfueling', function()
-	local vehicle = GetPlayersLastVehicle()
-	local petrolCan = GetSelectedPedWeapon(playerPed) == `WEAPON_PETROLCAN`
-	local playerCoords = GetEntityCoords(playerPed)
-	local moneyAmount = exports.ox_inventory:Search(2, 'money')
+if not Config.qtarget then
+	RegisterCommand('startfueling', function()
+		local vehicle = GetPlayersLastVehicle()
+		local petrolCan = GetSelectedPedWeapon(playerPed) == `WEAPON_PETROLCAN`
+		local playerCoords = GetEntityCoords(playerPed)
+		local moneyAmount = exports.ox_inventory:Search(2, 'money')
 
-	if not petrolCan then
-		if not inStation or isFueling or IsPedInAnyVehicle(playerPed) then return end
-		if not nearestPump then return notify('There are no fuel pumps nearby') end
+		if not petrolCan then
+			if not inStation or isFueling or IsPedInAnyVehicle(playerPed) then return end
+			if not nearestPump then return notify('There are no fuel pumps nearby') end
 
-		if not isVehicleCloseEnough(playerCoords, vehicle) and Config.petrolCan.enabled then
-			if moneyAmount >= Config.petrolCan.price then
-				GetPetrolCan(nearestPump)
+			if not isVehicleCloseEnough(playerCoords, vehicle) and Config.petrolCan.enabled then
+				if moneyAmount >= Config.petrolCan.price then
+					GetPetrolCan(nearestPump)
+				else
+					notify('You cannot afford a petrol can')
+				end
+			elseif isVehicleCloseEnough(playerCoords, vehicle) then
+				if moneyAmount >= Config.priceTick then
+					StartFueling(vehicle, 1)
+				else
+					notify('You cannot afford to refuel your vehicle')
+				end
 			else
-				notify('You cannot afford a petrol can')
-			end
-		elseif isVehicleCloseEnough(playerCoords, vehicle) then
-			if moneyAmount >= Config.priceTick then
-				StartFueling(vehicle, 1)
-			else
-				notify('You cannot afford to refuel your vehicle')
+				return notify('Your vehicle is too far away')
 			end
 		else
-			return notify('Your vehicle is too far away')
-		end
-	else
-		if not Config.petrolCan.enabled or isFueling or IsPedInAnyVehicle(playerPed) then return end
-		if nearestPump then return notify('Put your can away before fueling with the pump') end
+			if not Config.petrolCan.enabled or isFueling or IsPedInAnyVehicle(playerPed) then return end
+			if nearestPump then return notify('Put your can away before fueling with the pump') end
 
-		if isVehicleCloseEnough(playerCoords, vehicle) then
-			if fuelingCan.metadata.ammo <= Config.durabilityTick then return end
-			StartFueling(vehicle, 2)
-		else
-			return notify('Your vehicle is too far away')
+			if isVehicleCloseEnough(playerCoords, vehicle) then
+				if fuelingCan.metadata.ammo <= Config.durabilityTick then return end
+				StartFueling(vehicle, 2)
+			else
+				return notify('Your vehicle is too far away')
+			end
 		end
-	end
-end)
+	end)
 
-RegisterKeyMapping('startfueling', 'Fuel vehicle', 'keyboard', 'e')
-TriggerEvent('chat:removeSuggestion', '/startfueling')
+	RegisterKeyMapping('startfueling', 'Fuel vehicle', 'keyboard', 'e')
+	TriggerEvent('chat:removeSuggestion', '/startfueling')
+end
+
+
+if Config.qtarget then
+	exports.qtarget:AddTargetModel(Config.pumpModels, {
+		options = {
+			{
+				action = function (entity)
+					if exports.ox_inventory:Search(2, 'money') >= Config.priceTick then
+						StartFueling(GetPlayersLastVehicle(), 1)
+					else
+						notify('You cannot afford to refuel your vehicle')
+					end
+				end,
+				icon = "fas fa-gas-pump",
+				label = "Start fueling",
+				canInteract = function (entity)
+					if isFueling or IsPedInAnyVehicle(playerPed) then
+						return false
+					end
+					return isVehicleCloseEnough(GetEntityCoords(playerPed), GetPlayersLastVehicle())
+				end
+			},
+			{
+				action = function (entity)
+					if exports.ox_inventory:Search(2, 'money') >= Config.petrolCan.price then
+						GetPetrolCan(GetEntityCoords(entity))
+					else
+						notify('You cannot afford a petrol can')
+					end
+				end,
+				icon = "fas fa-faucet",
+				label = "Buy or refill a fuel can",
+			},
+		},
+		distance = 2
+	})
+
+	exports.qtarget:Vehicle({
+		options = {
+			{
+				action = function (entity)
+					if fuelingCan.metadata.ammo <= Config.durabilityTick then return end
+					StartFueling(entity, 2)
+				end,
+				icon = "fas fa-gas-pump",
+				label = "Start fueling",
+				canInteract = function (entity)
+					if isFueling or IsPedInAnyVehicle(playerPed) then
+						return false
+					end
+					return GetSelectedPedWeapon(playerPed) == `WEAPON_PETROLCAN` and Config.petrolCan.enabled
+				end
+			}
+		},
+		distance = 2
+	})
+
+
+end
+
+
 AddTextEntry('fuelHelpText', 'Press ~INPUT_C2939D45~ to fuel')
 AddTextEntry('petrolcanHelpText', 'Press ~INPUT_C2939D45~ to buy or refill a fuel can')
 AddTextEntry('fuelLeaveVehicleText', 'Leave the vehicle to be able to start fueling')
