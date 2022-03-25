@@ -23,10 +23,10 @@ local nearestPump
 
 CreateThread(function()
 	while true do
-		playerPed = PlayerPedId()
-		local vehicle = GetVehiclePedIsIn(playerPed, false)
+		playerPed = cache.ped
+		local vehicle = cache.vehicle
 
-		if vehicle > 0 and GetIsVehicleEngineRunning(vehicle) and GetPedInVehicleSeat(vehicle, -1) == playerPed then
+		if vehicle and GetIsVehicleEngineRunning(vehicle) and GetPedInVehicleSeat(vehicle, -1) == playerPed then
 			local usage = Config.rpmUsage[math.floor(GetVehicleCurrentRpm(vehicle) * 10) / 10]
 			local multiplier = Config.classUsage[GetVehicleClass(vehicle)] or 1.0
 
@@ -40,7 +40,6 @@ CreateThread(function()
 
 			SetVehicleFuelLevel(vehicle, newFuel)
 			Vehicle:set('fuel', newFuel, true)
-			print(newFuel)
 		end
 
 		Wait(1000)
@@ -56,6 +55,7 @@ CreateThread(function()
 	if Config.qtarget and Config.showBlips ~= 1 then
 		return
 	end
+
 	while true do
 		local playerCoords = GetEntityCoords(playerPed)
 
@@ -217,7 +217,6 @@ local function StartFueling(vehicle, fuelingMode)
 		Wait(Config.refillTick)
 	end
 
-	print(fuel)
 	Vehicle:set('fuel', fuel, true)
 	SetVehicleFuelLevel(vehicle, fuel)
 	if fuelingMode == 1 then TriggerServerEvent('ox_fuel:pay', price, fuel) end
