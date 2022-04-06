@@ -11,6 +11,11 @@ end)
 local function isVehicleCloseEnough(playerCoords, vehicle)
 	return #(GetEntityCoords(vehicle) - playerCoords) <= 3
 end
+local function GetFuel(sentVeh)
+	if not DoesEntityExist(sentVeh) then return end;
+	return Entity(sentVeh).state.fuel or -1.0
+end
+exports('GetFuel', GetFuel)
 
 local playerPed
 local nearestPump
@@ -25,15 +30,16 @@ CreateThread(function()
 			local multiplier = Config.classUsage[GetVehicleClass(vehicle)] or 1.0
 
 			local Vehicle = Entity(vehicle).state
-			local fuel = Vehicle.fuel or GetVehicleFuelLevel(vehicle)
-			local newFuel = fuel - usage * multiplier
-
-			if newFuel < 0 or newFuel > 100 then
-				newFuel = GetVehicleFuelLevel(vehicle)
+			local fuel = Vehicle.fuel or -1.0
+			if fuel == -1.0 then
+				TriggerServerEvent('ox_fuel:initFuel', VehToNet(vehicle))
+			else
+				local newFuel = fuel and fuel - usage * multiplier
+				if type(newFuel) == 'number' and newFuel >= 0 and newFuel <= 100 then
+					Vehicle:set('fuel', newFuel, true)
+					SetVehicleFuelLevel(vehicle, newFuel)
+				end
 			end
-
-			SetVehicleFuelLevel(vehicle, newFuel)
-			Vehicle:set('fuel', newFuel, true)
 		end
 
 		Wait(1000)

@@ -76,3 +76,30 @@ RegisterNetEvent('ox_fuel:UpdateCanDurability', function(fuelingCan, durability)
 	fuelingCan.metadata.ammo = durability
 	exports.ox_inventory:SetMetadata(source, fuelingCan.slot, fuelingCan.metadata)
 end)
+
+RegisterNetEvent('ox_fuel:initFuel')
+AddEventHandler('ox_fuel:initFuel', function(sentVeh)
+	local veh = NetworkGetEntityFromNetworkId(sentVeh)
+	if veh ~= 0 then
+		Entity(veh).state.fuel = math.random(40, 60)
+	end
+end)
+
+AddEventHandler('ox_fuel:setFuel', function(sentVeh, sentFuel)
+	if type(sentFuel) == 'number' and sentFuel >= 0 and sentFuel <= 100 then
+		if DoesEntityExist(sentVeh) then
+			Entity(sentVeh).state.fuel = sentFuel
+		else
+			Entity(NetworkGetEntityFromNetworkId(sentVeh)).state.fuel = sentFuel
+		end
+	end
+end)
+
+local function GetFuel(sentVeh)
+	if DoesEntityExist(sentVeh) then
+		return Entity(sentVeh).state.fuel
+	else
+		return Entity(NetworkGetEntityFromNetworkId(sentVeh)).state.fuel
+	end
+end
+exports('GetFuel', GetFuel)
