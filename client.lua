@@ -152,7 +152,7 @@ local function StartFueling(vehicle, fuelingMode)
 
 	if 100 - fuel < Config.refillValue then
 		isFueling = false
-		return ox_inventory:notify({type = 'error', text = 'The tank of this vehicle is full'})
+		return lib.notify({type = 'error', description = 'The tank of this vehicle is full'})
 	end
 
 	if fuelingMode == 1 then
@@ -164,40 +164,37 @@ local function StartFueling(vehicle, fuelingMode)
 
 	Wait(500)
 
-	ox_inventory:Progress({
-		duration = duration,
-		label = 'Fueling vehicle',
-		useWhileDead = false,
-		canCancel = true,
-		disable = {
-			move = true,
-			car = true,
-			combat = true,
-		},
-		anim = {
-			dict = 'timetable@gardener@filling_can',
-			clip = 'gar_ig_5_filling_can',
-			flags = 49,
-		},
-	}, function(cancel)
-		if cancel then
-			isFueling = false
-		end
+	CreateThread(function()
+		lib.progressCircle({
+			duration = duration,
+			useWhileDead = false,
+			canCancel = true,
+			disable = {
+				move = true,
+				car = true,
+				combat = true,
+			},
+			anim = {
+				dict = 'timetable@gardener@filling_can',
+				clip = 'gar_ig_5_filling_can',
+			},
+		})
+
+		isFueling = false
 	end)
 
 	while isFueling do
-
 		if fuelingMode == 1 then
 			price += Config.priceTick
-			if price >= moneyAmount then
-				ox_inventory:CancelProgress()
-			end
-		end
 
-		if fuelingMode == 2 then
+			if price >= moneyAmount then
+				lib.cancelProgress()
+			end
+		elseif fuelingMode == 2 then
 			durability += Config.durabilityTick
+
 			if durability >= fuelingCan.metadata.ammo then
-				ox_inventory:CancelProgress()
+				lib.cancelProgress()
 				TriggerEvent('ox_inventory:disarm')
 				TriggerServerEvent('ox_fuel:UpdateCanDurability', fuelingCan, 0)
 			end
@@ -228,7 +225,7 @@ local function GetPetrolCan(pumpCoord)
 
 	Wait(500)
 
-	ox_inventory:Progress({
+	if lib.progressCircle({
 		duration = Config.petrolCan.duration,
 		label = 'Fueling can',
 		useWhileDead = false,
@@ -243,18 +240,15 @@ local function GetPetrolCan(pumpCoord)
 			clip = 'gar_ig_5_filling_can',
 			flags = 49,
 		},
-	}, function(cancel)
-		LocalPlayer.state.invBusy = false
-		if not cancel then
-			if petrolCan > 0 then
-				return TriggerServerEvent('ox_fuel:fuelCan', true, Config.petrolCan.refillPrice)
-			else
-				return TriggerServerEvent('ox_fuel:fuelCan', false, Config.petrolCan.price)
-			end
+	}) then
+		if petrolCan > 0 then
+			return TriggerServerEvent('ox_fuel:fuelCan', true, Config.petrolCan.refillPrice)
 		else
-			return false
+			return TriggerServerEvent('ox_fuel:fuelCan', false, Config.petrolCan.price)
 		end
-	end)
+	end
+
+	LocalPlayer.state.invBusy = false
 end
 
 if not Config.qtarget then
@@ -266,32 +260,32 @@ if not Config.qtarget then
 
 		if not petrolCan then
 			if not inStation or isFueling or IsPedInAnyVehicle(playerPed) then return end
-			if not nearestPump then return ox_inventory:notify({type = 'error', text = 'There are no fuel pumps nearby'}) end
+			if not nearestPump then return lib.notify({type = 'error', description = 'There are no fuel pumps nearby'}) end
 
 			if not isVehicleCloseEnough(playerCoords, vehicle) and Config.petrolCan.enabled then
 				if moneyAmount >= Config.petrolCan.price then
 					GetPetrolCan(nearestPump)
 				else
-					ox_inventory:notify({type = 'error', text = 'You cannot afford a petrol can'})
+					lib.notify({type = 'error', description = 'You cannot afford a petrol can'})
 				end
 			elseif isVehicleCloseEnough(playerCoords, vehicle) then
 				if moneyAmount >= Config.priceTick then
 					StartFueling(vehicle, 1)
 				else
-					ox_inventory:notify({type = 'error', text = 'You cannot afford to refuel your vehicle'})
+					lib.notify({type = 'error', description = 'You cannot afford to refuel your vehicle'})
 				end
 			else
-				return ox_inventory:notify({type = 'error', text = 'Your vehicle is too far away'})
+				return lib.notify({type = 'error', description = 'Your vehicle is too far away'})
 			end
 		else
 			if not Config.petrolCan.enabled or isFueling or IsPedInAnyVehicle(playerPed) then return end
-			if nearestPump then return ox_inventory:notify({type = 'error', text = 'Put your can away before fueling with the pump'}) end
+			if nearestPump then return lib.notify({type = 'error', description = 'Put your can away before fueling with the pump'}) end
 
 			if isVehicleCloseEnough(playerCoords, vehicle) then
 				if fuelingCan.metadata.ammo <= Config.durabilityTick then return end
 				StartFueling(vehicle, 2)
 			else
-				return ox_inventory:notify({type = 'error', text = 'Your vehicle is too far away'})
+				return lib.notify({type = 'error', description = 'Your vehicle is too far away'})
 			end
 		end
 	end)
@@ -309,7 +303,7 @@ if Config.qtarget then
 					if ox_inventory:Search(2, 'money') >= Config.priceTick then
 						StartFueling(GetPlayersLastVehicle(), 1)
 					else
-						ox_inventory:notify({type = 'error', text = 'You cannot afford to refuel your vehicle'})
+						lib.notify({type = 'error', description = 'You cannot afford to refuel your vehicle'})
 					end
 				end,
 				icon = "fas fa-gas-pump",
@@ -326,7 +320,7 @@ if Config.qtarget then
 					if ox_inventory:Search(2, 'money') >= Config.petrolCan.price then
 						GetPetrolCan(GetEntityCoords(entity))
 					else
-						ox_inventory:notify({type = 'error', text = 'You cannot afford a petrol can'})
+						lib.notify({type = 'error', description = 'You cannot afford a petrol can'})
 					end
 				end,
 				icon = "fas fa-faucet",

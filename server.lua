@@ -3,9 +3,9 @@ local ox_inventory = exports.ox_inventory
 local function isMoneyEnough(money, price)
 	if money < price then
 		local missingMoney = price - money
-		TriggerClientEvent('ox_inventory:notify', source, {
+		TriggerClientEvent('ox_lib:notify', source, {
 			type = 'error',
-			text = ('Not enough money! Missing %s$'):format(missingMoney)
+			description = ('Not enough money! Missing %s$'):format(missingMoney)
 		})
 		return false
 	else
@@ -15,13 +15,13 @@ end
 
 RegisterNetEvent('ox_fuel:pay', function(price, fuel)
 	assert(type(price) == 'number', ('Price expected a number, received %s'):format(type(price)))
-	
+
 	ox_inventory:RemoveItem(source, 'money', price)
 
 	fuel = math.floor(fuel)
-	TriggerClientEvent('ox_inventory:notify', source, {
+	TriggerClientEvent('ox_lib:notify', source, {
 		type = 'success',
-		text = ('Fueled to ' .. fuel .. '% ' .. '- $' .. price)
+		description = ('Fueled to ' .. fuel .. '% ' .. '- $' .. price)
 	})
 end)
 
@@ -39,9 +39,9 @@ RegisterNetEvent('ox_fuel:fuelCan', function(hasCan, price)
 
 			ox_inventory:SetMetadata(source, item.slot, item.metadata)
 			ox_inventory:RemoveItem(source, 'money', price)
-			TriggerClientEvent('ox_inventory:notify', source, {
+			TriggerClientEvent('ox_lib:notify', source, {
 				type = 'success',
-				text = ('Paid $%s for refilling your fuel can'):format(price)
+				description = ('Paid $%s for refilling your fuel can'):format(price)
 			})
 		end
 	else
@@ -51,18 +51,18 @@ RegisterNetEvent('ox_fuel:fuelCan', function(hasCan, price)
 			local canCarry = ox_inventory:CanCarryItem(source, 'WEAPON_PETROLCAN', 1)
 
 			if not canCarry then 
-				return TriggerClientEvent('ox_inventory:notify', source, {
+				return TriggerClientEvent('ox_lib:notify', source, {
 					type = 'error',
-					text = ('You can\'t carry anymore stuff'):format(missingMoney)
-				}) 
+					description = ('You can\'t carry anymore stuff'):format(missingMoney)
+				})
 			end
 
 			ox_inventory:AddItem(source, 'WEAPON_PETROLCAN', 1)
 
 			ox_inventory:RemoveItem(source, 'money', price)
-			TriggerClientEvent('ox_inventory:notify', source, {
+			TriggerClientEvent('ox_lib:notify', source, {
 				type = 'success',
-				text = ('Paid $%s for buying a fuel can'):format(price)
+				description = ('Paid $%s for buying a fuel can'):format(price)
 			})
 		else
 			-- manually triggered event, cheating?

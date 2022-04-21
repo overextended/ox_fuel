@@ -13,7 +13,8 @@ description  'Fuel management system with ox_inventory support'
 
 --[[ Manifest ]]--
 dependencies {
-	'PolyZone'
+	'ox_lib',
+	'ox_inventory',
 }
 
 shared_scripts {
