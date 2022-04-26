@@ -239,11 +239,11 @@ local function GetPetrolCan(pumpCoord)
 		if petrolCan > 0 then
 			return TriggerServerEvent('ox_fuel:fuelCan', true, Config.petrolCan.refillPrice)
 		end
-
+		LocalPlayer.state.invBusy = false
 		return TriggerServerEvent('ox_fuel:fuelCan', false, Config.petrolCan.price)
+	else
+		LocalPlayer.state.invBusy = false
 	end
-
-	LocalPlayer.state.invBusy = false
 end
 
 if not Config.qtarget then
