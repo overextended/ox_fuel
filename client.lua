@@ -237,10 +237,10 @@ local function GetPetrolCan(pumpCoord)
 		local petrolCan = ox_inventory:Search('count', 'WEAPON_PETROLCAN')
 
 		if petrolCan > 0 then
-			return TriggerServerEvent('ox_fuel:fuelCan', true, Config.petrolCan.refillPrice)
+			TriggerServerEvent('ox_fuel:fuelCan', true, Config.petrolCan.refillPrice)
+		else
+			TriggerServerEvent('ox_fuel:fuelCan', false, Config.petrolCan.price)
 		end
-
-		return TriggerServerEvent('ox_fuel:fuelCan', false, Config.petrolCan.price)
 	end
 
 	LocalPlayer.state.invBusy = false
