@@ -12,6 +12,24 @@ local function isVehicleCloseEnough(playerCoords, vehicle)
 	return #(GetEntityCoords(vehicle) - playerCoords) <= 3
 end
 
+local function Raycast(flag)
+	local playerCoords = GetEntityCoords(cache.ped)
+	local plyOffset = GetOffsetFromEntityInWorldCoords(cache.ped, 0.0, 2.2, -0.25)
+	local rayHandle = StartShapeTestCapsule(playerCoords.x, playerCoords.y, playerCoords.z + 0.5, plyOffset.x, plyOffset.y, plyOffset.z, 2.2, flag or 30, cache.ped)
+	while true do
+		Wait(0)
+		local result, _, _, _, entityHit = GetShapeTestResult(rayHandle)
+		if result ~= 1 then
+			local entityType
+			if entityHit then entityType = GetEntityType(entityHit) end
+			if entityHit and entityType ~= 0 then
+				return entityHit, entityType
+			end
+			return false
+		end
+	end
+end
+
 local playerPed
 local nearestPump
 
@@ -203,6 +221,7 @@ local function startFueling(vehicle, isPump)
 		Wait(Config.refillTick)
 	end
 
+	print(fuel)
 	Vehicle:set('fuel', fuel, true)
 	SetVehicleFuelLevel(vehicle, fuel)
 
@@ -247,6 +266,7 @@ local function GetPetrolCan(pumpCoord)
 end
 
 if not Config.qtarget then
+	local bones = {'wheel_rr', 'wheel_lr'}
 	RegisterCommand('startfueling', function()
 		local vehicle = GetPlayersLastVehicle()
 		local petrolCan = GetSelectedPedWeapon(playerPed) == `WEAPON_PETROLCAN`
@@ -275,11 +295,18 @@ if not Config.qtarget then
 			if not Config.petrolCan.enabled or isFueling or cache.vehicle then return end
 			if nearestPump then return lib.notify({type = 'error', description = 'Put your can away before fueling with the pump'}) end
 
-			if isVehicleCloseEnough(playerCoords, vehicle) then
-				if fuelingCan.metadata.ammo <= Config.durabilityTick then return end
-				startFueling(vehicle)
-			else
-				return lib.notify({type = 'error', description = 'Your vehicle is too far away'})
+			local entityHit, _ = Raycast()
+			if not entityHit then return end
+			for i = 1, #bones do
+				local fuelcap = GetEntityBoneIndexByName(entityHit, bones[i])
+				local fuelcapPosition = GetWorldPositionOfEntityBone(entityHit, fuelcap)
+				local distance = #(GetEntityCoords(cache.ped) - fuelcapPosition)
+				local closeToVehicle = distance < 1.3 and true or false
+				if closeToVehicle then
+					return startFueling(entityHit, false)
+				else
+					if i == #bones then return lib.notify({type = 'error', description = 'Your vehicle is too far away'}) end
+				end
 			end
 		end
 	end)
