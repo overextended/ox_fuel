@@ -168,8 +168,8 @@ local function startFueling(vehicle, isPump)
 				combat = true,
 			},
 			anim = {
-				dict = 'timetable@gardener@filling_can',
-				clip = 'gar_ig_5_filling_can',
+				dict = isPump and 'timetable@gardener@filling_can' or 'weapon@w_sp_jerrycan',
+				clip = isPump and 'gar_ig_5_filling_can' or 'fire',
 			},
 		})
 
@@ -248,8 +248,6 @@ end
 
 if not Config.qtarget then
 	RegisterCommand('startfueling', function()
-		if not nearestPump then return end
-
 		local vehicle = GetPlayersLastVehicle()
 		local petrolCan = GetSelectedPedWeapon(playerPed) == `WEAPON_PETROLCAN`
 		local playerCoords = GetEntityCoords(playerPed)
