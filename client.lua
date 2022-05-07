@@ -221,7 +221,6 @@ local function startFueling(vehicle, isPump)
 		Wait(Config.refillTick)
 	end
 
-	print(fuel)
 	Vehicle:set('fuel', fuel, true)
 	SetVehicleFuelLevel(vehicle, fuel)
 
@@ -268,6 +267,7 @@ end
 if not Config.qtarget then
 	local bones = {'wheel_rr', 'wheel_lr'}
 	RegisterCommand('startfueling', function()
+		if lib.progressActive() then return end
 		local vehicle = GetPlayersLastVehicle()
 		local petrolCan = GetSelectedPedWeapon(playerPed) == `WEAPON_PETROLCAN`
 		local playerCoords = GetEntityCoords(playerPed)
