@@ -18,6 +18,7 @@ dependencies {
 }
 
 shared_scripts {
+	'@ox_lib/init.lua',
 	'config.lua'
 }
 
@@ -26,7 +27,10 @@ server_scripts {
 }
 
 client_scripts {
-	'@ox_lib/init.lua',
 	'data/stations.lua',
 	'client.lua'
+}
+
+files {
+	'locales/*.json'
 }

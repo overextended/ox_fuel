@@ -1,3 +1,5 @@
+lib.locale()
+
 local ox_inventory = exports.ox_inventory
 
 local function isMoneyEnough(money, price)
@@ -5,7 +7,7 @@ local function isMoneyEnough(money, price)
 		local missingMoney = price - money
 		TriggerClientEvent('ox_lib:notify', source, {
 			type = 'error',
-			description = ('Not enough money! Missing %s$'):format(missingMoney)
+			description = locale('not_enough_money', missingMoney)
 		})
 		return false
 	else
@@ -21,7 +23,7 @@ RegisterNetEvent('ox_fuel:pay', function(price, fuel)
 	fuel = math.floor(fuel)
 	TriggerClientEvent('ox_lib:notify', source, {
 		type = 'success',
-		description = ('Fueled to ' .. fuel .. '% ' .. '- $' .. price)
+		description = locale('fuel_success', fuel, price)
 	})
 end)
 
@@ -41,7 +43,7 @@ RegisterNetEvent('ox_fuel:fuelCan', function(hasCan, price)
 			ox_inventory:RemoveItem(source, 'money', price)
 			TriggerClientEvent('ox_lib:notify', source, {
 				type = 'success',
-				description = ('Paid $%s for refilling your fuel can'):format(price)
+				description = locale('petrolcan_refill', price)
 			})
 		end
 	else
@@ -53,7 +55,7 @@ RegisterNetEvent('ox_fuel:fuelCan', function(hasCan, price)
 			if not canCarry then 
 				return TriggerClientEvent('ox_lib:notify', source, {
 					type = 'error',
-					description = ('You can\'t carry anymore stuff'):format(missingMoney)
+					description = locale('petrolcan_cannot_carry')
 				})
 			end
 
@@ -62,7 +64,7 @@ RegisterNetEvent('ox_fuel:fuelCan', function(hasCan, price)
 			ox_inventory:RemoveItem(source, 'money', price)
 			TriggerClientEvent('ox_lib:notify', source, {
 				type = 'success',
-				description = ('Paid $%s for buying a fuel can'):format(price)
+				description = locale('petrolcan_buy', price)
 			})
 		else
 			-- manually triggered event, cheating?

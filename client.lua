@@ -1,3 +1,5 @@
+lib.locale()
+
 local fuelingCan = nil
 
 AddEventHandler('ox_inventory:currentWeapon', function(currentWeapon)
@@ -69,7 +71,7 @@ local function createBlip(station)
 	SetBlipColour(blip, 23)
 	SetBlipAsShortRange(blip, true)
 	BeginTextCommandSetBlipName('STRING')
-	AddTextComponentSubstringPlayerName('Fuel Station')
+	AddTextComponentSubstringPlayerName(locale('fuel_station_blip'))
 	EndTextCommandSetBlipName(blip)
 	return blip
 end
@@ -163,7 +165,7 @@ local function startFueling(vehicle, isPump)
 
 	if 100 - fuel < Config.refillValue then
 		isFueling = false
-		return lib.notify({type = 'error', description = 'The tank of this vehicle is full'})
+		return lib.notify({type = 'error', description = locale('tank_full')})
 	end
 
 	if isPump then
@@ -238,7 +240,6 @@ local function GetPetrolCan(pumpCoord)
 
 	if lib.progressCircle({
 		duration = Config.petrolCan.duration,
-		label = 'Fueling can',
 		useWhileDead = false,
 		canCancel = true,
 		disable = {
@@ -280,20 +281,20 @@ if not Config.qtarget then
 				if moneyAmount >= Config.petrolCan.price then
 					GetPetrolCan(nearestPump)
 				else
-					lib.notify({type = 'error', description = 'You cannot afford a petrol can'})
+					lib.notify({type = 'error', description = locale('petrolcan_cannot_afford')})
 				end
 			elseif isVehicleCloseEnough(playerCoords, vehicle) then
 				if moneyAmount >= Config.priceTick then
 					startFueling(vehicle, true)
 				else
-					lib.notify({type = 'error', description = 'You cannot afford to refuel your vehicle'})
+					lib.notify({type = 'error', description = locale('refuel_cannot_afford')})
 				end
 			else
-				return lib.notify({type = 'error', description = 'Your vehicle is too far away'})
+				return lib.notify({type = 'error', description = locale('vehicle_far')})
 			end
 		else
 			if not Config.petrolCan.enabled or isFueling or cache.vehicle then return end
-			if nearestPump then return lib.notify({type = 'error', description = 'Put your can away before fueling with the pump'}) end
+			if nearestPump then return lib.notify({type = 'error', description = locale('pump_fuel_with_can')}) end
 
 			local entityHit, _ = Raycast()
 			if not entityHit then return end
@@ -305,7 +306,7 @@ if not Config.qtarget then
 				if closeToVehicle then
 					return startFueling(entityHit, false)
 				else
-					if i == #bones then return lib.notify({type = 'error', description = 'Your vehicle is too far away'}) end
+					if i == #bones then return lib.notify({type = 'error', description = locale('vehicle_far')}) end
 				end
 			end
 		end
@@ -324,7 +325,7 @@ if Config.qtarget then
 					if ox_inventory:Search(2, 'money') >= Config.priceTick then
 						startFueling(GetPlayersLastVehicle(), 1)
 					else
-						lib.notify({type = 'error', description = 'You cannot afford to refuel your vehicle'})
+						lib.notify({type = 'error', description = locale('refuel_cannot_afford')})
 					end
 				end,
 				icon = "fas fa-gas-pump",
@@ -341,11 +342,11 @@ if Config.qtarget then
 					if ox_inventory:Search(2, 'money') >= Config.petrolCan.price then
 						GetPetrolCan(GetEntityCoords(entity))
 					else
-						lib.notify({type = 'error', description = 'You cannot afford a petrol can'})
+						lib.notify({type = 'error', description = locale('petrolcan_cannot_afford')})
 					end
 				end,
 				icon = "fas fa-faucet",
-				label = "Buy or refill a fuel can",
+				label = locale('petrolcan_buy_or_refill'),
 			},
 		},
 		distance = 2
@@ -359,7 +360,7 @@ if Config.qtarget then
 					startFueling(entity)
 				end,
 				icon = "fas fa-gas-pump",
-				label = "Start fueling",
+				label = locale('start_fueling'),
 				canInteract = function (entity)
 					if isFueling or cache.vehicle then
 						return false
@@ -372,6 +373,6 @@ if Config.qtarget then
 	})
 end
 
-AddTextEntry('fuelHelpText', 'Press ~INPUT_C2939D45~ to fuel')
-AddTextEntry('petrolcanHelpText', 'Press ~INPUT_C2939D45~ to buy or refill a fuel can')
-AddTextEntry('fuelLeaveVehicleText', 'Leave the vehicle to be able to start fueling')
+AddTextEntry('fuelHelpText', locale('fuel_help'))
+AddTextEntry('petrolcanHelpText', locale('petrolcan_help'))
+AddTextEntry('fuelLeaveVehicleText', locale('leave_vehicle'))
