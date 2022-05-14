@@ -78,3 +78,12 @@ RegisterNetEvent('ox_fuel:UpdateCanDurability', function(fuelingCan, durability)
 	fuelingCan.metadata.ammo = durability
 	exports.ox_inventory:SetMetadata(source, fuelingCan.slot, fuelingCan.metadata)
 end)
+
+RegisterNetEvent('ox_fuel:createStatebag', function(netid, fuel)
+	local vehicle = NetworkGetEntityFromNetworkId(netid)
+	local state = vehicle and Entity(vehicle).state
+
+	if state and not state.fuel and GetEntityType(vehicle) == 2 and NetworkGetEntityOwner(vehicle) == source then
+		state:set('fuel', fuel > 100 and 100 or fuel, true)
+	end
+end)
