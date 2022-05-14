@@ -32,28 +32,41 @@ local function Raycast(flag)
 	end
 end
 
-local playerPed
-local nearestPump
+local function setFuel(state, vehicle, fuel)
+	SetVehicleFuelLevel(vehicle, fuel)
+
+	if not state.fuel then
+		TriggerServerEvent('ox_fuel:createStatebag', NetworkGetNetworkIdFromEntity(vehicle), fuel)
+	else
+		state:set('fuel', fuel, true)
+	end
+end
 
 CreateThread(function()
 	while true do
-		playerPed = cache.ped
 		local vehicle = cache.vehicle
 
-		if vehicle and GetIsVehicleEngineRunning(vehicle) and GetPedInVehicleSeat(vehicle, -1) == playerPed then
+		if vehicle and cache.seat == -1 and GetIsVehicleEngineRunning(vehicle) then
 			local usage = Config.rpmUsage[math.floor(GetVehicleCurrentRpm(vehicle) * 10) / 10]
 			local multiplier = Config.classUsage[GetVehicleClass(vehicle)] or 1.0
 
 			local Vehicle = Entity(vehicle).state
-			local fuel = Vehicle.fuel or GetVehicleFuelLevel(vehicle)
-			local newFuel = fuel - usage * multiplier
+			local fuel = Vehicle.fuel
 
-			if newFuel < 0 or newFuel > 100 then
-				newFuel = GetVehicleFuelLevel(vehicle)
+			if not fuel then
+				TriggerServerEvent('ox_fuel:createStatebag', NetworkGetNetworkIdFromEntity(vehicle), GetVehicleFuelLevel(vehicle))
+			else
+
+				local newFuel = fuel - usage * multiplier
+
+				if newFuel < 0 or newFuel > 100 then
+					newFuel = fuel
+				end
+
+				if fuel ~= newFuel then
+					setFuel(Vehicle, vehicle, newFuel)
+				end
 			end
-
-			SetVehicleFuelLevel(vehicle, newFuel)
-			Vehicle:set('fuel', newFuel, true)
 		end
 
 		Wait(1000)
@@ -62,6 +75,7 @@ end)
 
 local inStation = false
 local isFueling = false
+local nearestPump
 
 local function createBlip(station)
 	local blip = AddBlipForCoord(station.x, station.y, station.z)
@@ -81,7 +95,7 @@ CreateThread(function()
 	if Config.qtarget and Config.showBlips ~= 1 then return end
 
 	while true do
-		local playerCoords = GetEntityCoords(playerPed)
+		local playerCoords = GetEntityCoords(cache.ped)
 
 		for station, pumps in pairs(stations) do
 			local stationDistance = #(playerCoords - station)
@@ -97,7 +111,7 @@ CreateThread(function()
 							local pumpDistance
 
 							repeat
-								playerCoords = GetEntityCoords(playerPed)
+								playerCoords = GetEntityCoords(cache.ped)
 								for i = 1, #pumps do
 									local pump = pumps[i]
 									pumpDistance = #(playerCoords - pump)
@@ -118,7 +132,7 @@ CreateThread(function()
 												end
 											end
 
-											pumpDistance = #(GetEntityCoords(playerPed) - pump)
+											pumpDistance = #(GetEntityCoords(cache.ped) - pump)
 											Wait(0)
 										end
 
@@ -132,7 +146,7 @@ CreateThread(function()
 
 						Wait(100)
 						inStation = false
-						stationDistance = #(GetEntityCoords(playerPed) - station)
+						stationDistance = #(GetEntityCoords(cache.ped) - station)
 					until stationDistance > 60
 				end
 			end
@@ -173,7 +187,7 @@ local function startFueling(vehicle, isPump)
 		moneyAmount = ox_inventory:Search(2, 'money')
 	end
 
-	TaskTurnPedToFaceEntity(playerPed, vehicle, duration)
+	TaskTurnPedToFaceEntity(cache.ped, vehicle, duration)
 
 	Wait(500)
 
@@ -223,8 +237,7 @@ local function startFueling(vehicle, isPump)
 		Wait(Config.refillTick)
 	end
 
-	Vehicle:set('fuel', fuel, true)
-	SetVehicleFuelLevel(vehicle, fuel)
+	setFuel(Vehicle, vehicle, fuel)
 
 	if isPump then
 		TriggerServerEvent('ox_fuel:pay', price, fuel)
@@ -235,7 +248,7 @@ end
 
 local function GetPetrolCan(pumpCoord)
 	LocalPlayer.state.invBusy = true
-	TaskTurnPedToFaceCoord(playerPed, pumpCoord, Config.petrolCan.duration)
+	TaskTurnPedToFaceCoord(cache.ped, pumpCoord, Config.petrolCan.duration)
 	Wait(500)
 
 	if lib.progressCircle({
@@ -270,8 +283,8 @@ if not Config.qtarget then
 	RegisterCommand('startfueling', function()
 		if lib.progressActive() then return end
 		local vehicle = GetPlayersLastVehicle()
-		local petrolCan = GetSelectedPedWeapon(playerPed) == `WEAPON_PETROLCAN`
-		local playerCoords = GetEntityCoords(playerPed)
+		local petrolCan = GetSelectedPedWeapon(cache.ped) == `WEAPON_PETROLCAN`
+		local playerCoords = GetEntityCoords(cache.ped)
 		local moneyAmount = ox_inventory:Search(2, 'money')
 
 		if not petrolCan then
@@ -334,7 +347,7 @@ if Config.qtarget then
 					if isFueling or cache.vehicle then
 						return false
 					end
-					return isVehicleCloseEnough(GetEntityCoords(playerPed), GetPlayersLastVehicle())
+					return isVehicleCloseEnough(GetEntityCoords(cache.ped), GetPlayersLastVehicle())
 				end
 			},
 			{
@@ -365,7 +378,7 @@ if Config.qtarget then
 					if isFueling or cache.vehicle then
 						return false
 					end
-					return GetSelectedPedWeapon(playerPed) == `WEAPON_PETROLCAN` and Config.petrolCan.enabled
+					return GetSelectedPedWeapon(cache.ped) == `WEAPON_PETROLCAN` and Config.petrolCan.enabled
 				end
 			}
 		},
