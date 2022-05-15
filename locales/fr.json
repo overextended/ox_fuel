@@ -1,0 +1,18 @@
+{
+	"tank_full": "Le réservoir de ce véhicule est plein",
+	"petrolcan_cannot_afford": "Vous ne pouvez pas acheter un jerrican",
+	"refuel_cannot_afford": "Vous n'avez pas les moyens de faire le plein de votre véhicule",
+	"vehicle_far": "Votre véhicule est trop loin",
+	"pump_fuel_with_can": "Rangez votre jerrican pour utiliser la pompe",
+	"fuel_help": "Appuyer sur ~INPUT_C2939D45~ pour faire le plein",
+	"petrolcan_help": "Appuyer sur ~INPUT_C2939D45~ pour acheter ou remplir un jerrican",
+	"leave_vehicle": "Sortez du véhicule pour pouvoir faire le plein",
+	"start_fueling": "Faire le plein",
+	"petrolcan_buy_or_refill": "Acheter ou remplir un jerrican",
+	"fuel_station_blip": "Station essence",
+	"not_enough_money": "Il vous manque $%s",
+	"fuel_success": "Rempli à %s - $%s",
+	"petrolcan_refill": "Vous avez payer $%s pour remplir votre jerrican",
+	"petrolcan_buy": "Vous avez payer $%s pour un jerrican",
+	"petrolcan_cannot_carry": "Vous ne pouvez pas porter ce jerrican"
+}
