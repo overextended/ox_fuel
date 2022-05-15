@@ -78,7 +78,7 @@ lib.onCache('seat', function(seat)
 				Wait(1000)
 			end
 
-			setFuel(state, vehicle, newFuel, true)
+			setFuel(state, vehicle, state.fuel, true)
 		end)
 	end
 end)
