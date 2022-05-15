@@ -33,12 +33,14 @@ local function Raycast(flag)
 end
 
 local function setFuel(state, vehicle, fuel, replicate)
-	SetVehicleFuelLevel(vehicle, fuel)
+	if DoesEntityExist(vehicle) then
+		SetVehicleFuelLevel(vehicle, fuel)
 
-	if not state.fuel then
-		TriggerServerEvent('ox_fuel:createStatebag', NetworkGetNetworkIdFromEntity(vehicle), fuel)
-	else
-		state:set('fuel', fuel, replicate)
+		if not state.fuel then
+			TriggerServerEvent('ox_fuel:createStatebag', NetworkGetNetworkIdFromEntity(vehicle), fuel)
+		else
+			state:set('fuel', fuel, replicate)
+		end
 	end
 end
 
