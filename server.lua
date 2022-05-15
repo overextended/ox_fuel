@@ -1,5 +1,7 @@
 lib.locale()
 
+if Config.versionCheck then lib.versionCheck('overextended/ox_fuel') end
+
 local ox_inventory = exports.ox_inventory
 
 local function isMoneyEnough(money, price)

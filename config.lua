@@ -1,4 +1,7 @@
 Config = {
+	-- Get notified when a new version releases
+	versionCheck = true,
+
 	-- Enable support for qTarget
 	qtarget = false,
 
