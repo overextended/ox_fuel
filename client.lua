@@ -32,44 +32,54 @@ local function Raycast(flag)
 	end
 end
 
-local function setFuel(state, vehicle, fuel)
+local function setFuel(state, vehicle, fuel, replicate)
 	SetVehicleFuelLevel(vehicle, fuel)
 
 	if not state.fuel then
 		TriggerServerEvent('ox_fuel:createStatebag', NetworkGetNetworkIdFromEntity(vehicle), fuel)
 	else
-		state:set('fuel', fuel, true)
+		state:set('fuel', fuel, replicate)
 	end
 end
 
-CreateThread(function()
-	while true do
-		local vehicle = cache.vehicle
+lib.onCache('seat', function(seat)
+	if seat == -1 then
+		SetTimeout(0, function()
+			local vehicle = cache.vehicle
+			local state = Entity(vehicle).state
 
-		if vehicle and cache.seat == -1 and GetIsVehicleEngineRunning(vehicle) then
-			local usage = Config.rpmUsage[math.floor(GetVehicleCurrentRpm(vehicle) * 10) / 10]
-			local multiplier = Config.classUsage[GetVehicleClass(vehicle)] or 1.0
-
-			local Vehicle = Entity(vehicle).state
-			local fuel = Vehicle.fuel
-
-			if not fuel then
+			if not state.fuel then
 				TriggerServerEvent('ox_fuel:createStatebag', NetworkGetNetworkIdFromEntity(vehicle), GetVehicleFuelLevel(vehicle))
-			else
-
-				local newFuel = fuel - usage * multiplier
-
-				if newFuel < 0 or newFuel > 100 then
-					newFuel = fuel
-				end
-
-				if fuel ~= newFuel then
-					setFuel(Vehicle, vehicle, newFuel)
-				end
 			end
-		end
 
-		Wait(1000)
+			local multiplier = Config.classUsage[GetVehicleClass(vehicle)] or 1.0
+			local fuelTick = 0
+
+			while cache.seat == -1 do
+				if GetIsVehicleEngineRunning(vehicle) then
+					local usage = Config.rpmUsage[math.floor(GetVehicleCurrentRpm(vehicle) * 10) / 10]
+					local fuel = state.fuel
+					local newFuel = fuel - usage * multiplier
+
+					if newFuel < 0 or newFuel > 100 then
+						newFuel = fuel
+					end
+
+					if fuel ~= newFuel then
+						if fuelTick == 15 then
+							fuelTick = 0
+						end
+
+						setFuel(state, vehicle, newFuel, fuelTick == 0)
+						fuelTick += 1
+					end
+				end
+
+				Wait(1000)
+			end
+
+			setFuel(state, vehicle, newFuel, true)
+		end)
 	end
 end)
 
@@ -237,7 +247,7 @@ local function startFueling(vehicle, isPump)
 		Wait(Config.refillTick)
 	end
 
-	setFuel(Vehicle, vehicle, fuel)
+	setFuel(Vehicle, vehicle, fuel, true)
 
 	if isPump then
 		TriggerServerEvent('ox_fuel:pay', price, fuel)
