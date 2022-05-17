@@ -52,6 +52,7 @@ lib.onCache('seat', function(seat)
 
 			if not state.fuel then
 				TriggerServerEvent('ox_fuel:createStatebag', NetworkGetNetworkIdFromEntity(vehicle), GetVehicleFuelLevel(vehicle))
+				while not state.fuel do Wait(0) end
 			end
 
 			local multiplier = Config.classUsage[GetVehicleClass(vehicle)] or 1.0
