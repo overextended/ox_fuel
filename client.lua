@@ -354,7 +354,7 @@ if Config.qtarget then
 					end
 				end,
 				icon = "fas fa-gas-pump",
-				label = "Start fueling",
+				label = locale('start_fueling'),
 				canInteract = function (entity)
 					if isFueling or cache.vehicle then
 						return false
