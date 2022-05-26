@@ -1,0 +1,18 @@
+{
+	"tank_full": "Rezervoar ovog vozila je pun",
+	"petrolcan_cannot_afford": "Ne možeš priuštiti kanister sa gorivom",
+	"refuel_cannot_afford": "Ne možeš priuštiti sipanje goriva",
+	"vehicle_far": "Tvoje vozilo je predaleko",
+	"pump_fuel_with_can": "Odložite kanister sa gorivom pre nego što sipate gorivo na pumpi",
+	"fuel_help": "Klikni ~INPUT_C2939D45~ da sipaš gorivo",
+	"petrolcan_help": "Klikni ~INPUT_C2939D45~ da kupiš ili dopuniš kanister sa gorivom",
+	"leave_vehicle": "Napustite vozilo da biste mogli da počnete da sipate gorivo",
+	"start_fueling": "Započni sipanje goriva",
+	"petrolcan_buy_or_refill": "Kupi ili dopuni kanister sa gorivom",
+	"fuel_station_blip": "Benzinska Pumpa",
+	"not_enough_money": "Nemaš dovoljno novca! Nedostaje ti $%s",
+	"fuel_success": "Napunjeno %s - $%s",
+	"petrolcan_refill": "Platio si $%s za dopunjavanje goriva u kanisteru",
+	"petrolcan_buy": "Platio si $%s za kanister",
+	"petrolcan_cannot_carry": "Ne možete nositi ovaj kanister"
+}
