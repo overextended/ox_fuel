@@ -68,6 +68,15 @@ RegisterNetEvent('ox_fuel:fuelCan', function(hasCan, price)
 				type = 'success',
 				description = locale('petrolcan_buy', price)
 			})
+
+			local item = ox_inventory:Search(source, 'slots', 'WEAPON_PETROLCAN')
+			if item then
+				item = item[1]
+				item.metadata.durability = 100
+				item.metadata.ammo = 100
+
+				ox_inventory:SetMetadata(source, item.slot, item.metadata)
+			end
 		else
 			-- manually triggered event, cheating?
 		end
