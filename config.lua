@@ -30,7 +30,7 @@ Config = {
 	-- Can durability loss per refillTick
 	durabilityTick = 1.3,
 
-	-- Enables fuel can 
+	-- Enables fuel can
 	petrolCan = {
 		enabled = true,
 		duration = 5000,
@@ -58,7 +58,7 @@ Config = {
 		[0.0] = 0.00,
 	},
 
-	-- Electic vehicles
+	-- Electic vehicles (not currently used)
 	electricModels = {
 		[`airtug`] = true,
 		[`neon`] = true,

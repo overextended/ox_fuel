@@ -48,6 +48,11 @@ lib.onCache('seat', function(seat)
 	if seat == -1 then
 		SetTimeout(0, function()
 			local vehicle = cache.vehicle
+			local multiplier = Config.classUsage[GetVehicleClass(vehicle)] or 1.0
+
+			-- Vehicle doesn't use fuel
+			if multiplier == 0.0 then return end
+
 			local state = Entity(vehicle).state
 
 			if not state.fuel then
@@ -55,7 +60,6 @@ lib.onCache('seat', function(seat)
 				while not state.fuel do Wait(0) end
 			end
 
-			local multiplier = Config.classUsage[GetVehicleClass(vehicle)] or 1.0
 			local fuelTick = 0
 
 			while cache.seat == -1 do
