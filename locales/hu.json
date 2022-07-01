@@ -1,0 +1,18 @@
+{
+	"tank_full": "A járműved tankja tele van",
+	"petrolcan_cannot_afford": "Nincs elég pénzed, hogy benzines kannát vegyél",
+	"refuel_cannot_afford": "Nincs elég pénzed a tankoláshoz",
+	"vehicle_far": "A jármű túl messze van",
+	"pump_fuel_with_can": "Tankolás előtt tedd el a kannát",
+	"fuel_help": "Nyomj ~INPUT_C2939D45~-t a tankoláshoz",
+	"petrolcan_help": "Nyomj ~INPUT_C2939D45~-t, hogy vegyél vagy újratöltds a kannát",
+	"leave_vehicle": "Szálj ki a járműből, hogy tankolhass",
+	"start_fueling": "Tankolás elkezdése",
+	"petrolcan_buy_or_refill": "Vegyél vagy töltds újra a kannát",
+	"fuel_station_blip": "Benzinkút",
+	"not_enough_money": "Nincs elég pénzed! Hiányzik $%s",
+	"fuel_success": "Tankoltál %s - $%s",
+	"petrolcan_refill": "Kifizettél $%s-t a kanna újratöltéséért",
+	"petrolcan_buy": "Kifizettél $%s-t a kannáért",
+	"petrolcan_cannot_carry": "Ezt a kannát nem szállíthatod"
+}
