@@ -1,0 +1,18 @@
+{
+	"tank_full": "De tank van dit voertuig is vol",
+	"petrolcan_cannot_afford": "Je kan een jerrycan niet betalen",
+	"refuel_cannot_afford": "Je kan het niet betalen om je voertuig te tanken",
+	"vehicle_far": "Je voertuig is te ver weg",
+	"pump_fuel_with_can": "Doe je jerrycan weg voordat je kan tanken",
+	"fuel_help": "Klik op ~INPUT_C2939D45~ om te tanken",
+	"petrolcan_help": "Klik op ~INPUT_C2939D45~ om een jerrycan te kopen of bij te vullen",
+	"leave_vehicle": "Verlaat je voertuig om te tanken",
+	"start_fueling": "Start met tanken",
+	"petrolcan_buy_or_refill": "Koop of hervul een jerry can",
+	"fuel_station_blip": "Tankstation",
+	"not_enough_money": "Niet genoeg geld! Mist €%s",
+	"fuel_success": "Gevuld tot %s - €%s",
+	"petrolcan_refill": "Je hebt €%s betaald voor het vullen van je jerrycan",
+	"petrolcan_buy": "Je hebt €%s betaald voor een jerrycan",
+	"petrolcan_cannot_carry": "Je kan deze jerrycan niet tillen"
+}
