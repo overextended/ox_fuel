@@ -10,10 +10,6 @@ AddEventHandler('ox_inventory:currentWeapon', function(currentWeapon)
 	end
 end)
 
-local function isVehicleCloseEnough(playerCoords, vehicle)
-	return #(GetEntityCoords(vehicle) - playerCoords) <= 3
-end
-
 local function raycast(flag)
 	local playerCoords = GetEntityCoords(cache.ped)
 	local plyOffset = GetOffsetFromEntityInWorldCoords(cache.ped, 0.0, 2.2, -0.25)
@@ -92,7 +88,6 @@ lib.onCache('seat', function(seat)
 	end
 end)
 
-local inStation = false
 local isFueling = false
 local nearestPump
 
@@ -126,7 +121,6 @@ CreateThread(function()
 				if not Config.qtarget then
 					repeat
 						if stationDistance < 15 then
-							inStation = true
 							local pumpDistance
 
 							repeat
@@ -144,10 +138,12 @@ CreateThread(function()
 											elseif not isFueling then
 												local vehicle = GetPlayersLastVehicle()
 
-												if not isVehicleCloseEnough(playerCoords, vehicle) and Config.petrolCan.enabled then
-													DisplayHelpTextThisFrame('petrolcanHelpText', false)
-												else
-													DisplayHelpTextThisFrame('fuelHelpText', false)
+												if vehicle then
+													if fuelingCan and Config.petrolCan.enabled then
+														DisplayHelpTextThisFrame('petrolcanHelpText', false)
+													else
+														DisplayHelpTextThisFrame('fuelHelpText', false)
+													end
 												end
 											end
 
@@ -164,7 +160,6 @@ CreateThread(function()
 						end
 
 						Wait(100)
-						inStation = false
 						stationDistance = #(GetEntityCoords(cache.ped) - station)
 					until stationDistance > 60
 				end
@@ -263,7 +258,7 @@ local function startFueling(vehicle, isPump)
 	end
 end
 
-local function GetPetrolCan(pumpCoord)
+local function getPetrolCan(pumpCoord, refuel)
 	LocalPlayer.state.invBusy = true
 	TaskTurnPedToFaceCoord(cache.ped, pumpCoord, Config.petrolCan.duration)
 	Wait(500)
@@ -283,13 +278,11 @@ local function GetPetrolCan(pumpCoord)
 			flags = 49,
 		}
 	}) then
-		local petrolCan = ox_inventory:Search('count', 'WEAPON_PETROLCAN')
-
-		if petrolCan > 0 then
-			TriggerServerEvent('ox_fuel:fuelCan', true, Config.petrolCan.refillPrice)
-		else
-			TriggerServerEvent('ox_fuel:fuelCan', false, Config.petrolCan.price)
+		if refuel and ox_inventory:Search('count', 'WEAPON_PETROLCAN') then
+			return TriggerServerEvent('ox_fuel:fuelCan', true, Config.petrolCan.refillPrice)
 		end
+
+		TriggerServerEvent('ox_fuel:fuelCan', false, Config.petrolCan.price)
 	end
 
 	LocalPlayer.state.invBusy = false
@@ -301,37 +294,35 @@ if not Config.qtarget then
 	RegisterCommand('startfueling', function()
 		if isFueling or cache.vehicle or lib.progressActive() then return end
 
-		local petrolCan = GetSelectedPedWeapon(cache.ped) == `WEAPON_PETROLCAN`
+		local petrolCan = Config.petrolCan.enabled and GetSelectedPedWeapon(cache.ped) == `WEAPON_PETROLCAN`
 		local playerCoords = GetEntityCoords(cache.ped)
 
-		if not petrolCan then
+		if nearestPump then
+			if petrolCan then
+				return getPetrolCan(nearestPump, true)
+			end
+
 			local vehicle = GetPlayersLastVehicle()
 
-			if not inStation or not vehicle then return end
-
-			local vehicleInRange = isVehicleCloseEnough(playerCoords, vehicle)
+			local vehicleInRange = vehicle and #(GetEntityCoords(vehicle) - playerCoords) <= 3
 			local moneyAmount = ox_inventory:Search(2, 'money')
 
-			if not vehicleInRange and Config.petrolCan.enabled then
+			if not vehicleInRange then
+				if not Config.petrolCan.enabled then return end
+
 				if moneyAmount >= Config.petrolCan.price then
-					return GetPetrolCan(nearestPump)
+					return getPetrolCan(nearestPump)
 				end
 
 				return lib.notify({type = 'error', description = locale('petrolcan_cannot_afford')})
-			elseif vehicleInRange then
-				if moneyAmount >= Config.priceTick then
-					return startFueling(vehicle, true)
-				end
-
+			elseif moneyAmount >= Config.priceTick then
+				return startFueling(vehicle, true)
+			else
 				return lib.notify({type = 'error', description = locale('refuel_cannot_afford')})
 			end
 
 			return lib.notify({type = 'error', description = locale('vehicle_far')})
-		elseif Config.petrolCan.enabled then
-			if nearestPump then
-				return lib.notify({type = 'error', description = locale('pump_fuel_with_can')})
-			end
-
+		elseif petrolCan then
 			local vehicle = raycast()
 
 			if vehicle then
@@ -370,13 +361,13 @@ if Config.qtarget then
 					if isFueling or cache.vehicle then
 						return false
 					end
-					return isVehicleCloseEnough(GetEntityCoords(cache.ped), GetPlayersLastVehicle())
+					return #(GetEntityCoords(GetPlayersLastVehicle()) - playerCoords) <= 3
 				end
 			},
 			{
 				action = function (entity)
 					if ox_inventory:Search(2, 'money') >= Config.petrolCan.price then
-						GetPetrolCan(GetEntityCoords(entity))
+						getPetrolCan(GetEntityCoords(entity))
 					else
 						lib.notify({type = 'error', description = locale('petrolcan_cannot_afford')})
 					end
