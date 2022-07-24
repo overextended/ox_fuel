@@ -14,19 +14,19 @@ local function isVehicleCloseEnough(playerCoords, vehicle)
 	return #(GetEntityCoords(vehicle) - playerCoords) <= 3
 end
 
-local function Raycast(flag)
+local function raycast(flag)
 	local playerCoords = GetEntityCoords(cache.ped)
 	local plyOffset = GetOffsetFromEntityInWorldCoords(cache.ped, 0.0, 2.2, -0.25)
 	local rayHandle = StartShapeTestCapsule(playerCoords.x, playerCoords.y, playerCoords.z + 0.5, plyOffset.x, plyOffset.y, plyOffset.z, 2.2, flag or 30, cache.ped)
 	while true do
 		Wait(0)
 		local result, _, _, _, entityHit = GetShapeTestResult(rayHandle)
+
 		if result ~= 1 then
-			local entityType
-			if entityHit then entityType = GetEntityType(entityHit) end
-			if entityHit and entityType ~= 0 then
-				return entityHit, entityType
+			if entityHit and GetEntityType(entityHit) == 2 then
+				return entityHit
 			end
+
 			return false
 		end
 	end
@@ -297,47 +297,53 @@ end
 
 if not Config.qtarget then
 	local bones = {'wheel_rr', 'wheel_lr'}
+
 	RegisterCommand('startfueling', function()
-		if lib.progressActive() then return end
-		local vehicle = GetPlayersLastVehicle()
+		if isFueling or cache.vehicle or lib.progressActive() then return end
+
 		local petrolCan = GetSelectedPedWeapon(cache.ped) == `WEAPON_PETROLCAN`
 		local playerCoords = GetEntityCoords(cache.ped)
-		local moneyAmount = ox_inventory:Search(2, 'money')
 
 		if not petrolCan then
-			if not inStation or isFueling or cache.vehicle then return end
+			local vehicle = GetPlayersLastVehicle()
 
-			if not isVehicleCloseEnough(playerCoords, vehicle) and Config.petrolCan.enabled then
+			if not inStation or not vehicle then return end
+
+			local vehicleInRange = isVehicleCloseEnough(playerCoords, vehicle)
+			local moneyAmount = ox_inventory:Search(2, 'money')
+
+			if not vehicleInRange and Config.petrolCan.enabled then
 				if moneyAmount >= Config.petrolCan.price then
-					GetPetrolCan(nearestPump)
-				else
-					lib.notify({type = 'error', description = locale('petrolcan_cannot_afford')})
+					return GetPetrolCan(nearestPump)
 				end
-			elseif isVehicleCloseEnough(playerCoords, vehicle) then
-				if moneyAmount >= Config.priceTick then
-					startFueling(vehicle, true)
-				else
-					lib.notify({type = 'error', description = locale('refuel_cannot_afford')})
-				end
-			else
-				return lib.notify({type = 'error', description = locale('vehicle_far')})
-			end
-		else
-			if not Config.petrolCan.enabled or isFueling or cache.vehicle then return end
-			if nearestPump then return lib.notify({type = 'error', description = locale('pump_fuel_with_can')}) end
 
-			local entityHit, _ = Raycast()
-			if not entityHit then return end
-			for i = 1, #bones do
-				local fuelcap = GetEntityBoneIndexByName(entityHit, bones[i])
-				local fuelcapPosition = GetWorldPositionOfEntityBone(entityHit, fuelcap)
-				local distance = #(GetEntityCoords(cache.ped) - fuelcapPosition)
-				local closeToVehicle = distance < 1.3 and true or false
-				if closeToVehicle then
-					return startFueling(entityHit, false)
-				else
-					if i == #bones then return lib.notify({type = 'error', description = locale('vehicle_far')}) end
+				return lib.notify({type = 'error', description = locale('petrolcan_cannot_afford')})
+			elseif vehicleInRange then
+				if moneyAmount >= Config.priceTick then
+					return startFueling(vehicle, true)
 				end
+
+				return lib.notify({type = 'error', description = locale('refuel_cannot_afford')})
+			end
+
+			return lib.notify({type = 'error', description = locale('vehicle_far')})
+		elseif Config.petrolCan.enabled then
+			if nearestPump then
+				return lib.notify({type = 'error', description = locale('pump_fuel_with_can')})
+			end
+
+			local vehicle = raycast()
+
+			if vehicle then
+				for i = 1, #bones do
+					local fuelcapPosition = GetWorldPositionOfEntityBone(vehicle, GetEntityBoneIndexByName(vehicle, bones[i]))
+
+					if #(playerCoords - fuelcapPosition) < 1.3 then
+						return startFueling(vehicle, false)
+					end
+				end
+
+				return lib.notify({type = 'error', description = locale('vehicle_far')})
 			end
 		end
 	end)
