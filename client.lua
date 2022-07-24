@@ -60,6 +60,8 @@ lib.onCache('seat', function(seat)
 				while not state.fuel do Wait(0) end
 			end
 
+			SetVehicleFuelLevel(vehicle, state.fuel)
+
 			local fuelTick = 0
 
 			while cache.seat == -1 do
@@ -240,7 +242,7 @@ local function startFueling(vehicle, isPump)
 			if durability >= fuelingCan.metadata.ammo then
 				lib.cancelProgress()
 				TriggerEvent('ox_inventory:disarm')
-				TriggerServerEvent('ox_fuel:UpdateCanDurability', fuelingCan, 0)
+				TriggerServerEvent('ox_fuel:updateFuelCan', fuelingCan, 0)
 			end
 		end
 
@@ -254,12 +256,10 @@ local function startFueling(vehicle, isPump)
 		Wait(Config.refillTick)
 	end
 
-	setFuel(Vehicle, vehicle, fuel, true)
-
 	if isPump then
-		TriggerServerEvent('ox_fuel:pay', price, fuel)
+		TriggerServerEvent('ox_fuel:pay', price, fuel, NetworkGetNetworkIdFromEntity(vehicle))
 	else
-		TriggerServerEvent('ox_fuel:UpdateCanDurability', fuelingCan, fuelingCan.metadata.ammo - durability)
+		TriggerServerEvent('ox_fuel:updateFuelCan', fuelingCan, fuelingCan.metadata.ammo - durability, NetworkGetNetworkIdFromEntity(vehicle), fuel)
 	end
 end
 

@@ -17,12 +17,23 @@ local function isMoneyEnough(money, price)
 	end
 end
 
-RegisterNetEvent('ox_fuel:pay', function(price, fuel)
+local function setFuelState(netid, fuel)
+	local vehicle = NetworkGetEntityFromNetworkId(netid)
+	local state = vehicle and Entity(vehicle)?.state
+
+	if state then
+		state:set('fuel', fuel, true)
+	end
+end
+
+RegisterNetEvent('ox_fuel:pay', function(price, fuel, netid)
 	assert(type(price) == 'number', ('Price expected a number, received %s'):format(type(price)))
 
 	ox_inventory:RemoveItem(source, 'money', price)
 
 	fuel = math.floor(fuel)
+	setFuelState(netid, fuel)
+
 	TriggerClientEvent('ox_lib:notify', source, {
 		type = 'success',
 		description = locale('fuel_success', fuel, price)
@@ -49,12 +60,12 @@ RegisterNetEvent('ox_fuel:fuelCan', function(hasCan, price)
 			})
 		end
 	else
-		local petrolCan = exports.ox_inventory:GetItem(source, 'WEAPON_PETROLCAN', false, true)
+		local petrolCan = ox_inventory:GetItem(source, 'WEAPON_PETROLCAN', false, true)
 
 		if petrolCan == 0 then
 			local canCarry = ox_inventory:CanCarryItem(source, 'WEAPON_PETROLCAN', 1)
 
-			if not canCarry then 
+			if not canCarry then
 				return TriggerClientEvent('ox_lib:notify', source, {
 					type = 'error',
 					description = locale('petrolcan_cannot_carry')
@@ -74,11 +85,13 @@ RegisterNetEvent('ox_fuel:fuelCan', function(hasCan, price)
 	end
 end)
 
-RegisterNetEvent('ox_fuel:UpdateCanDurability', function(fuelingCan, durability)
+RegisterNetEvent('ox_fuel:updateFuelCan', function(fuelingCan, durability, netid, fuel)
 	durability = math.floor(durability)
 	fuelingCan.metadata.durability = durability
 	fuelingCan.metadata.ammo = durability
-	exports.ox_inventory:SetMetadata(source, fuelingCan.slot, fuelingCan.metadata)
+
+	ox_inventory:SetMetadata(source, fuelingCan.slot, fuelingCan.metadata)
+	setFuelState(netid, fuel)
 end)
 
 RegisterNetEvent('ox_fuel:createStatebag', function(netid, fuel)
