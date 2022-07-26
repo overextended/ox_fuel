@@ -3,11 +3,7 @@ lib.locale()
 local fuelingCan = nil
 
 AddEventHandler('ox_inventory:currentWeapon', function(currentWeapon)
-	if currentWeapon and currentWeapon.name == 'WEAPON_PETROLCAN' then
-		fuelingCan = currentWeapon
-	else
-		fuelingCan = nil
-	end
+	fuelingCan = currentWeapon and currentWeapon.name == 'WEAPON_PETROLCAN'
 end)
 
 local function raycast(flag)
@@ -138,7 +134,7 @@ CreateThread(function()
 											elseif not isFueling then
 												local vehicle = GetPlayersLastVehicle()
 
-												if vehicle then
+												if vehicle ~= 0 then
 													if fuelingCan and Config.petrolCan.enabled then
 														DisplayHelpTextThisFrame('petrolcanHelpText', false)
 													else
@@ -298,14 +294,15 @@ if not Config.qtarget then
 		local playerCoords = GetEntityCoords(cache.ped)
 
 		if nearestPump then
-			if petrolCan then
+			local moneyAmount = ox_inventory:Search(2, 'money')
+
+			if petrolCan and moneyAmount >= Config.petrolCan.price then
 				return getPetrolCan(nearestPump, true)
 			end
 
 			local vehicle = GetPlayersLastVehicle()
 
 			local vehicleInRange = vehicle and #(GetEntityCoords(vehicle) - playerCoords) <= 3
-			local moneyAmount = ox_inventory:Search(2, 'money')
 
 			if not vehicleInRange then
 				if not Config.petrolCan.enabled then return end
@@ -361,16 +358,21 @@ if Config.qtarget then
 					if isFueling or cache.vehicle then
 						return false
 					end
-					return #(GetEntityCoords(GetPlayersLastVehicle()) - playerCoords) <= 3
+
+					local vehicle = GetPlayersLastVehicle()
+					return vehicle ~= 0 and #(GetEntityCoords(vehicle) - playerCoords) <= 3
 				end
 			},
 			{
 				action = function (entity)
-					if ox_inventory:Search(2, 'money') >= Config.petrolCan.price then
-						getPetrolCan(GetEntityCoords(entity))
-					else
-						lib.notify({type = 'error', description = locale('petrolcan_cannot_afford')})
+					local petrolCan = Config.petrolCan.enabled and GetSelectedPedWeapon(cache.ped) == `WEAPON_PETROLCAN`
+					local moneyAmount = ox_inventory:Search(2, 'money')
+
+					if moneyAmount < Config.petrolCan.price then
+						return lib.notify({type = 'error', description = locale('petrolcan_cannot_afford')})
 					end
+
+					return getPetrolCan(GetEntityCoords(entity), petrolCan)
 				end,
 				icon = "fas fa-faucet",
 				label = locale('petrolcan_buy_or_refill'),
