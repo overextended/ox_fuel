@@ -360,6 +360,7 @@ if Config.qtarget then
 					end
 
 					local vehicle = GetPlayersLastVehicle()
+					local playerCoords = GetEntityCoords(cache.ped)
 					return vehicle ~= 0 and #(GetEntityCoords(vehicle) - playerCoords) <= 3
 				end
 			},
