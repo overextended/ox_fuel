@@ -236,8 +236,8 @@ local function startFueling(vehicle, isPump)
 
 			if durability >= fuelingCan.metadata.ammo then
 				lib.cancelProgress()
-				TriggerEvent('ox_inventory:disarm')
-				TriggerServerEvent('ox_fuel:updateFuelCan', fuelingCan, 0)
+				durability = fuelingCan.metadata.ammo
+				break
 			end
 		end
 
