@@ -79,9 +79,10 @@ RegisterNetEvent('ox_fuel:fuelCan', function(hasCan, price)
 end)
 
 RegisterNetEvent('ox_fuel:updateFuelCan', function(durability, netid, fuel)
+	local source = source
 	local item = ox_inventory:GetCurrentWeapon(source)
 
-	if item and durability < 0 then
+	if item and durability > 0 then
 		durability = math.floor(item.metadata.durability - durability)
 		item.metadata.durability = durability
 		item.metadata.ammo = durability
