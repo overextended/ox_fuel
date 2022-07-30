@@ -78,13 +78,21 @@ RegisterNetEvent('ox_fuel:fuelCan', function(hasCan, price)
 	end
 end)
 
-RegisterNetEvent('ox_fuel:updateFuelCan', function(fuelingCan, durability, netid, fuel)
-	durability = math.floor(durability)
-	fuelingCan.metadata.durability = durability
-	fuelingCan.metadata.ammo = durability
+RegisterNetEvent('ox_fuel:updateFuelCan', function(durability, netid, fuel)
+	local item = ox_inventory:GetCurrentWeapon(source)
 
-	ox_inventory:SetMetadata(source, fuelingCan.slot, fuelingCan.metadata)
-	setFuelState(netid, fuel)
+	if item and durability < 0 then
+		durability = math.floor(item.metadata.durability - durability)
+		item.metadata.durability = durability
+		item.metadata.ammo = durability
+
+		ox_inventory:SetMetadata(source, item.slot, item.metadata)
+		setFuelState(netid, fuel)
+		Wait(0)
+		return TriggerClientEvent('ox_inventory:disarm', source)
+	end
+
+	-- player is sus?
 end)
 
 RegisterNetEvent('ox_fuel:createStatebag', function(netid, fuel)

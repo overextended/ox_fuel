@@ -254,7 +254,7 @@ local function startFueling(vehicle, isPump)
 	if isPump then
 		TriggerServerEvent('ox_fuel:pay', price, fuel, NetworkGetNetworkIdFromEntity(vehicle))
 	else
-		TriggerServerEvent('ox_fuel:updateFuelCan', fuelingCan, fuelingCan.metadata.ammo - durability, NetworkGetNetworkIdFromEntity(vehicle), fuel)
+		TriggerServerEvent('ox_fuel:updateFuelCan', durability, NetworkGetNetworkIdFromEntity(vehicle), fuel)
 	end
 end
 
