@@ -133,13 +133,12 @@ CreateThread(function()
 												DisplayHelpTextThisFrame('fuelLeaveVehicleText', false)
 											elseif not isFueling then
 												local vehicle = GetPlayersLastVehicle()
+												local vehicleInRange = vehicle ~= 0 and #(GetEntityCoords(vehicle) - playerCoords) <= 3
 
-												if vehicle ~= 0 then
-													if fuelingCan and Config.petrolCan.enabled then
-														DisplayHelpTextThisFrame('petrolcanHelpText', false)
-													else
-														DisplayHelpTextThisFrame('fuelHelpText', false)
-													end
+												if vehicleInRange then
+													DisplayHelpTextThisFrame('fuelHelpText', false)
+												elseif Config.petrolCan.enabled then
+													DisplayHelpTextThisFrame('petrolcanHelpText', false)
 												end
 											end
 
