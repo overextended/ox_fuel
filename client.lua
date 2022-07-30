@@ -36,7 +36,13 @@ local function setFuel(state, vehicle, fuel, replicate)
 	end
 end
 
+local lastVehicle
+
 lib.onCache('seat', function(seat)
+	if cache.vehicle then
+		lastVehicle = cache.vehicle
+	end
+
 	if seat == -1 then
 		SetTimeout(0, function()
 			local vehicle = cache.vehicle
@@ -132,8 +138,7 @@ CreateThread(function()
 											if cache.vehicle then
 												DisplayHelpTextThisFrame('fuelLeaveVehicleText', false)
 											elseif not isFueling then
-												local vehicle = GetPlayersLastVehicle()
-												local vehicleInRange = vehicle ~= 0 and #(GetEntityCoords(vehicle) - playerCoords) <= 3
+												local vehicleInRange = lastVehicle ~= 0 and #(GetEntityCoords(lastVehicle) - playerCoords) <= 3
 
 												if vehicleInRange then
 													DisplayHelpTextThisFrame('fuelHelpText', false)
@@ -299,9 +304,7 @@ if not Config.qtarget then
 				return getPetrolCan(nearestPump, true)
 			end
 
-			local vehicle = GetPlayersLastVehicle()
-
-			local vehicleInRange = vehicle and #(GetEntityCoords(vehicle) - playerCoords) <= 3
+			local vehicleInRange = lastVehicle and #(GetEntityCoords(lastVehicle) - playerCoords) <= 3
 
 			if not vehicleInRange then
 				if not Config.petrolCan.enabled then return end
@@ -312,7 +315,7 @@ if not Config.qtarget then
 
 				return lib.notify({type = 'error', description = locale('petrolcan_cannot_afford')})
 			elseif moneyAmount >= Config.priceTick then
-				return startFueling(vehicle, true)
+				return startFueling(lastVehicle, true)
 			else
 				return lib.notify({type = 'error', description = locale('refuel_cannot_afford')})
 			end
@@ -346,7 +349,7 @@ if Config.qtarget then
 			{
 				action = function (entity)
 					if ox_inventory:Search(2, 'money') >= Config.priceTick then
-						startFueling(GetPlayersLastVehicle(), 1)
+						startFueling(lastVehicle, 1)
 					else
 						lib.notify({type = 'error', description = locale('refuel_cannot_afford')})
 					end
@@ -358,9 +361,7 @@ if Config.qtarget then
 						return false
 					end
 
-					local vehicle = GetPlayersLastVehicle()
-					local playerCoords = GetEntityCoords(cache.ped)
-					return vehicle ~= 0 and #(GetEntityCoords(vehicle) - playerCoords) <= 3
+					return lastVehicle and #(GetEntityCoords(lastVehicle) - GetEntityCoords(cache.ped)) <= 3
 				end
 			},
 			{
@@ -394,7 +395,7 @@ if Config.qtarget then
 					if isFueling or cache.vehicle then
 						return false
 					end
-					return GetSelectedPedWeapon(cache.ped) == `WEAPON_PETROLCAN` and Config.petrolCan.enabled
+					return fuelingCan and Config.petrolCan.enabled
 				end
 			}
 		},
