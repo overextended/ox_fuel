@@ -3,7 +3,7 @@ lib.locale()
 local fuelingCan = nil
 
 AddEventHandler('ox_inventory:currentWeapon', function(currentWeapon)
-	fuelingCan = currentWeapon and currentWeapon.name == 'WEAPON_PETROLCAN'
+	fuelingCan = currentWeapon?.name == 'WEAPON_PETROLCAN' and currentWeapon
 end)
 
 local function raycast(flag)
