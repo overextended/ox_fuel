@@ -1,0 +1,18 @@
+{
+	"tank_full": "Selle sõiduki paak on täis",
+	"petrolcan_cannot_afford": "Te ei saa endale bensiinikanistrit lubada",
+	"refuel_cannot_afford": "Te ei saa endale lubada oma sõiduki tankimist",
+	"vehicle_far": "Teie sõiduk on liiga kaugel",
+	"pump_fuel_with_can": "Enne pumbaga tankimist pange purk ära",
+	"fuel_help": "Tankimiseks vajutage nuppu ~INPUT_C2939D45~",
+	"petrolcan_help": "Kütusekannu ostmiseks või täitmiseks vajutage nuppu ~INPUT_C2939D45~",
+	"leave_vehicle": "Jätke auto käima tankimise alustamiseks",
+	"start_fueling": "Alusta tankimist",
+	"petrolcan_buy_or_refill": "Ostke või täitke kütusekanister",
+	"fuel_station_blip": "Tankla",
+	"not_enough_money": "Pole piisavalt raha! Puudub $%s",
+	"fuel_success": "Kütuses %s – $%s",
+	"petrolcan_refill": "Kütusekanistri täitmise eest maksti $%s",
+	"petrolcan_buy": "Kütusepurgi eest maksti $%s",
+	"petrolcan_cannot_carry": "Te ei saa seda kütusekannu kaasas kanda"
+}
