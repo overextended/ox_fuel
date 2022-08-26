@@ -1,0 +1,18 @@
+{
+	"tank_full": "El depósito está lleno",
+	"petrolcan_cannot_afford": "No puedes pagar el bidón de gasolina",
+	"refuel_cannot_afford": "No puedes pagar por respostar el vehículo",
+	"vehicle_far": "El vehículo está demasiado lejos",
+	"pump_fuel_with_can": "Guarda el bidón antes de respostar con el surtidor",
+	"fuel_help": "Presiona ~INPUT_C2939D45~ para repostar",
+	"petrolcan_help": "Presiona ~INPUT_C2939D45~ para comprar o rellenar el bidón de gasolina",
+	"leave_vehicle": "Sal del vehículo para repostar",
+	"start_fueling": "Empezar a repostar",
+	"petrolcan_buy_or_refill": "Comprar o rellenar bidón de gasolina",
+	"fuel_station_blip": "Gasolinera",
+	"not_enough_money": "No tienes suficiente dinero, faltan %s€",
+	"fuel_success": "Has repostado %s - %s€",
+	"petrolcan_refill": "Has pagado %s€ por rellenar tu bidón de gasolina",
+	"petrolcan_buy": "Has pagado %s€ por un bidón de gasolina",
+	"petrolcan_cannot_carry": "No puedes cargar este bidón de gasolina"
+}
