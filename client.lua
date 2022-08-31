@@ -259,7 +259,6 @@ local function startFueling(vehicle, isPump)
 end
 
 local function getPetrolCan(pumpCoord, refuel)
-	LocalPlayer.state.invBusy = true
 	TaskTurnPedToFaceCoord(cache.ped, pumpCoord, Config.petrolCan.duration)
 	Wait(500)
 
@@ -284,8 +283,6 @@ local function getPetrolCan(pumpCoord, refuel)
 
 		TriggerServerEvent('ox_fuel:fuelCan', false, Config.petrolCan.price)
 	end
-
-	LocalPlayer.state.invBusy = false
 end
 
 if not Config.qtarget then
