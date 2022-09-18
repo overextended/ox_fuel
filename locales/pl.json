@@ -1,0 +1,18 @@
+{
+	"tank_full": "Zbiornik tego pojazdu jest pełny",
+	"petrolcan_cannot_afford": "Nie stać cię na kanister paliwa",
+	"refuel_cannot_afford": "Nie stać cię na zatankowanie tego pojazdu",
+	"vehicle_far": "Twój pojazd jest za daleko",
+	"pump_fuel_with_can": "Odłóż kanister paliwa przed rozpoczęciem tankowania",
+	"fuel_help": "Naciśnij ~INPUT_C2939D45~ aby zatankować",
+	"petrolcan_help": "Naciśnij ~INPUT_C2939D45~ aby kupić lub uzupełnić kanister",
+	"leave_vehicle": "Opuść pojazd, aby rozpocząć tankowanie",
+	"start_fueling": "Rozpocznij tankowanie",
+	"petrolcan_buy_or_refill": "Kup lub uzupełnij kanister",
+	"fuel_station_blip": "Stacja paliw",
+	"not_enough_money": "Nie masz wystarczającej ilości pieniędzy! Brakuje $%s",
+	"fuel_success": "Zatankowano do %s - $%s",
+	"petrolcan_refill": "Zapłacono $%s za uzupełnienie kanistra paliwa",
+	"petrolcan_buy": "Zapłacono $%s za kanister paliwa",
+	"petrolcan_cannot_carry": "Nie uniesiesz tego kanistra paliwa"
+}
