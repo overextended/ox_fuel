@@ -43,6 +43,8 @@ lib.onCache('seat', function(seat)
 		lastVehicle = cache.vehicle
 	end
 
+	if not NetworkGetEntityIsNetworked(lastVehicle) then return end
+
 	if seat == -1 then
 		SetTimeout(0, function()
 			local vehicle = cache.vehicle
