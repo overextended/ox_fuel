@@ -1,0 +1,18 @@
+{
+	"tank_full": "Der Tank von diesem Fahrzeug ist voll",
+	"petrolcan_cannot_afford": "Du kannst dir keinen Treibstoffkanister leisten",
+	"refuel_cannot_afford": "Du kannst dir keine Tankfüllung leisten",
+	"vehicle_far": "Dein Fahrzeug ist zu weit entfernt",
+	"pump_fuel_with_can": "Mach deinen Treibstoffkanister weg, bevor du tankst",
+	"fuel_help": "Nutze ~INPUT_C2939D45~ um zu tanken",
+	"petrolcan_help": "Nutze ~INPUT_C2939D45~ um einen Treibstoffkanister zu kaufen / nachzufüllen",
+	"leave_vehicle": "Verlasse das Fahrzeug bevor du tankst",
+	"start_fueling": "Tanken starten",
+	"petrolcan_buy_or_refill": "Kauf, oder Fülle einen Treibstoffkanister nach",
+	"fuel_station_blip": "Tankstelle",
+	"not_enough_money": "Nicht genügend Geld! Es fehlen $%s",
+	"fuel_success": "Erfolgreich zu %s - $%s getankt",
+	"petrolcan_refill": "Du hast $%s für das Auffüllen deines Treibstoffkanisters bezahlt",
+	"petrolcan_buy": "Du hast $%s für einen Treibstoffkanister bezahlt",
+	"petrolcan_cannot_carry": "Du kannst diesen Treibstoffkanister nicht tragen"
+}
