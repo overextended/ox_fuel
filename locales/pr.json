@@ -1,0 +1,18 @@
+{
+	"tank_full": "Makhzan in vasile naghliye por ast",
+	"petrolcan_cannot_afford": "Shoma pole kafi baraye kharid dabe benzin nadarid",
+	"refuel_cannot_afford": "Shoma pole kafi baraye benzin zadan nadarid",
+	"vehicle_far": "Vasile naghliye shoma dor ast",
+	"pump_fuel_with_can": "Baraye estefade az pomo benzin bayad dabe ro kenar bezarid",
+	"fuel_help": "Dokme ~INPUT_C2939D45~ jahat benzdin zadan",
+	"petrolcan_help": "Dokme ~INPUT_C2939D45~ jahat kharid ya por kardan dabe benzin",
+	"leave_vehicle": "Baraye benzin zadan bayad az vasile naghliye kharej shid",
+	"start_fueling": "Shoroe benzin zadan",
+	"petrolcan_buy_or_refill": "Kharid ya por kardan dabe benzin",
+	"fuel_station_blip": "Pomp Benzin",
+	"not_enough_money": "Shoma pole kafi nadarid! $%s kam darid",
+	"fuel_success": "Sokht giri anjam shod %s - $%s",
+	"petrolcan_refill": "Shoma $%s baraye por kardan dabe benzin pardakht kardid",
+	"petrolcan_buy": "Shoma $%s baraye dabe benzin pardakht kardid",
+	"petrolcan_cannot_carry": "Shoma nemitavanid dabe benzdin ra haml konid"
+}
