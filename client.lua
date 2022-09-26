@@ -385,6 +385,7 @@ if Config.qtarget then
 		options = {
 			{
 				action = function (entity)
+					if not fuelingCan then return lib.notify({type = 'error', description = locale('petrolcan_missing')}) end
 					if fuelingCan.metadata.ammo <= Config.durabilityTick then return end
 					startFueling(entity)
 				end,

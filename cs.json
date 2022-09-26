@@ -1,0 +1,19 @@
+{
+	"tank_full": "Nádrž vašeho vozidla je plná",
+	"petrolcan_cannot_afford": "Nemůžete si dovolit koupit kanystr",
+	"refuel_cannot_afford": "Nemůžete si dovolit natankovat vozidlo",
+	"vehicle_far": "Vozidlo je příliš daleko",
+	"pump_fuel_with_can": "Před tankováním pomocí pumpy odložte kanystr",
+	"fuel_help": "Stiskněte ~INPUT_C2939D45~ pro tankování",
+	"petrolcan_help": "Stiskněte ~INPUT_C2939D45~ pro koupení nebo doplnění kanystru",
+	"leave_vehicle": "Pro natankování musíte opustit vozidlo",
+	"start_fueling": "Začít tankovat",
+	"petrolcan_buy_or_refill": "Koupit/Naplnit kanystr",
+	"fuel_station_blip": "Čerpací stanice",
+	"not_enough_money": "Nedostatek peněz! Chybí $%s",
+	"fuel_success": "Natankováno na %s - $%s",
+	"petrolcan_refill": "Zaplaceno $%s za doplnění kanystru",
+	"petrolcan_buy": "Zaplaceno $%s za kanystr",
+	"petrolcan_cannot_carry": "Neunesete kanystr",
+	"petrolcan_missing": "You are not holding a fuel can"
+}

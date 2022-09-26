@@ -1,0 +1,19 @@
+{
+	"tank_full": "The tank of this vehicle is full",
+	"petrolcan_cannot_afford": "You cannot afford a petrol can",
+	"refuel_cannot_afford": "You cannot afford to refuel your vehicle, cash only",
+	"vehicle_far": "Your vehicle is too far away",
+	"pump_fuel_with_can": "Put your can away before fueling with the pump",
+	"fuel_help": "Press ~INPUT_C2939D45~ to fuel",
+	"petrolcan_help": "Press ~INPUT_C2939D45~ to buy or refill a fuel can",
+	"leave_vehicle": "Leave the vehicle to be able to start fueling",
+	"start_fueling": "Start fueling",
+	"petrolcan_buy_or_refill": "Buy or refill a fuel can",
+	"fuel_station_blip": "Fuel station",
+	"not_enough_money": "Not enough money! Missing $%s cash",
+	"fuel_success": "Fueled to %s - $%s",
+	"petrolcan_refill": "Paid $%s for refilling your fuel can",
+	"petrolcan_buy": "Paid $%s for a fuel can",
+	"petrolcan_cannot_carry": "You cannot carry this fuel can",
+	"petrolcan_missing": "You are not holding a fuel can"
+}
