@@ -356,7 +356,7 @@ if Config.qtarget then
 				icon = "fas fa-gas-pump",
 				label = locale('start_fueling'),
 				canInteract = function (entity)
-					if isFueling or cache.vehicle then
+					if isFueling or cache.vehicle or lib.progressActive() then
 						return false
 					end
 
@@ -391,7 +391,7 @@ if Config.qtarget then
 				icon = "fas fa-gas-pump",
 				label = locale('start_fueling'),
 				canInteract = function (entity)
-					if isFueling or cache.vehicle then
+					if isFueling or cache.vehicle or lib.progressActive() then
 						return false
 					end
 					return fuelingCan and Config.petrolCan.enabled
