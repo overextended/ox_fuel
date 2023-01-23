@@ -186,7 +186,6 @@ local ox_inventory = exports.ox_inventory
 -- fuelingMode = 1 - Pump
 -- fuelingMode = 2 - Can
 local function startFueling(vehicle, isPump)
-	isFueling = true
 	local Vehicle = Entity(vehicle).state
 	local fuel = Vehicle.fuel or GetVehicleFuelLevel(vehicle)
 	local duration = math.ceil((100 - fuel) / Config.refillValue) * Config.refillTick
@@ -194,17 +193,32 @@ local function startFueling(vehicle, isPump)
 	local durability = 0
 
 	if 100 - fuel < Config.refillValue then
-		isFueling = false
-		return lib.notify({type = 'error', description = locale('tank_full')})
+		return lib.notify({
+			type = 'error',
+			description = locale('tank_full')
+		})
 	end
 
 	if isPump then
 		price = 0
 		moneyAmount = ox_inventory:Search(2, 'money')
+
+		if Config.priceTick > moneyAmount then
+			return lib.notify({
+				type = 'error',
+				description = locale('not_enough_money', Config.priceTick)
+			})
+		end
+	elseif Config.durabilityTick > fuelingCan.metadata.ammo then
+		return lib.notify({
+			type = 'error',
+			description = locale('petrolcan_not_enough_fuel')
+		})
 	end
 
-	TaskTurnPedToFaceEntity(cache.ped, vehicle, duration)
+	isFueling = true
 
+	TaskTurnPedToFaceEntity(cache.ped, vehicle, duration)
 	Wait(500)
 
 	CreateThread(function()
