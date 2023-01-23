@@ -14,5 +14,6 @@
 	"fuel_success": "Fueled to %s - $%s",
 	"petrolcan_refill": "Paid $%s for refilling your fuel can",
 	"petrolcan_buy": "Paid $%s for a fuel can",
-	"petrolcan_cannot_carry": "You cannot carry this fuel can"
+	"petrolcan_cannot_carry": "You cannot carry this fuel can",
+	"petrolcan_not_enough_fuel": "Your fuel can doesn't have enough fuel"
 }
