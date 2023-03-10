@@ -1,0 +1,18 @@
+{
+	"tank_full": "这辆车的油箱是满的",
+	"petrolcan_cannot_afford": "你买不起汽油罐",
+	"refuel_cannot_afford": "您无力为车辆加油",
+	"vehicle_far": "您的车辆距离太远",
+	"pump_fuel_with_can": "在用泵加油之前收起您的汽油桶",
+	"fuel_help": "按 ~INPUT_C2939D45~ 加油",
+	"petrolcan_help": "按 ~INPUT_C2939D45~ 购买或补充汽油桶",
+	"leave_vehicle": "离开车辆才能开始加油",
+	"start_fueling": "开始加油",
+	"petrolcan_buy_or_refill": "购买或补充油罐",
+	"fuel_station_blip": "加油站",
+	"not_enough_money": "你的钱不够！缺少 $%s",
+	"fuel_success": "加油用了 $%s",
+	"petrolcan_refill": "为加油罐支付 $%s",
+	"petrolcan_buy": "为油罐支付$%s",
+	"petrolcan_cannot_carry": "你不能携带这种油罐"
+}
