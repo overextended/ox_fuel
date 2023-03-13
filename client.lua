@@ -193,10 +193,7 @@ local function startFueling(vehicle, isPump)
 	local durability = 0
 
 	if 100 - fuel < Config.refillValue then
-		return lib.notify({
-			type = 'error',
-			description = locale('tank_full')
-		})
+		return lib.notify({type = 'error', description = locale('tank_full')})
 	end
 
 	if isPump then
@@ -357,63 +354,95 @@ end
 
 
 if Config.qtarget then
-	exports.qtarget:AddTargetModel(Config.pumpModels, {
-		options = {
-			{
-				action = function (entity)
-					if ox_inventory:Search(2, 'money') >= Config.priceTick then
-						startFueling(lastVehicle, 1)
-					else
-						lib.notify({type = 'error', description = locale('refuel_cannot_afford')})
-					end
-				end,
-				icon = "fas fa-gas-pump",
-				label = locale('start_fueling'),
-				canInteract = function (entity)
-					if isFueling or cache.vehicle or lib.progressActive() then
-						return false
-					end
+	if Config.petrolCan.enabled then
+		exports.qtarget:AddTargetModel(Config.pumpModels, {
+			options = {
+				{
+					action = function (entity)
+						if ox_inventory:Search(2, 'money') >= Config.priceTick then
+							startFueling(lastVehicle, 1)
+						else
+							lib.notify({type = 'error', description = locale('refuel_cannot_afford')})
+						end
+					end,
+					icon = "fas fa-gas-pump",
+					label = locale('start_fueling'),
+					canInteract = function (entity)
+						if isFueling or cache.vehicle or lib.progressActive() then
+							return false
+						end
 
-					return lastVehicle and #(GetEntityCoords(lastVehicle) - GetEntityCoords(cache.ped)) <= 3
-				end
+						return lastVehicle and #(GetEntityCoords(lastVehicle) - GetEntityCoords(cache.ped)) <= 3
+					end
+				},
+				{
+					action = function (entity)
+						local petrolCan = Config.petrolCan.enabled and GetSelectedPedWeapon(cache.ped) == `WEAPON_PETROLCAN`
+						local moneyAmount = ox_inventory:Search(2, 'money')
+
+						if moneyAmount < Config.petrolCan.price then
+							return lib.notify({type = 'error', description = locale('petrolcan_cannot_afford')})
+						end
+
+						return getPetrolCan(GetEntityCoords(entity), petrolCan)
+					end,
+					icon = "fas fa-faucet",
+					label = locale('petrolcan_buy_or_refill'),
+				},
 			},
-			{
-				action = function (entity)
-					local petrolCan = Config.petrolCan.enabled and GetSelectedPedWeapon(cache.ped) == `WEAPON_PETROLCAN`
-					local moneyAmount = ox_inventory:Search(2, 'money')
+			distance = 2
+		})
+	else
+		exports.qtarget:AddTargetModel(Config.pumpModels, {
+			options = {
+				{
+					action = function (entity)
+						if ox_inventory:Search(2, 'money') >= Config.priceTick then
+							if GetVehicleFuelLevel(lastVehicle) >= 100 then
+								return lib.notify({type = 'error', description = locale('vehicle_full')})
+							end
+							startFueling(lastVehicle, 1)
+						else
+							lib.notify({type = 'error', description = locale('refuel_cannot_afford')})
+						end
+					end,
+					icon = "fas fa-gas-pump",
+					label = locale('start_fueling'),
+					canInteract = function (entity)
+						if isFueling or cache.vehicle then
+							return false
+						end
 
-					if moneyAmount < Config.petrolCan.price then
-						return lib.notify({type = 'error', description = locale('petrolcan_cannot_afford')})
+						return lastVehicle and #(GetEntityCoords(lastVehicle) - GetEntityCoords(cache.ped)) <= 3
 					end
-
-					return getPetrolCan(GetEntityCoords(entity), petrolCan)
-				end,
-				icon = "fas fa-faucet",
-				label = locale('petrolcan_buy_or_refill'),
+				},
 			},
-		},
-		distance = 2
-	})
-
-	exports.qtarget:Vehicle({
-		options = {
-			{
-				action = function (entity)
-					if fuelingCan.metadata.ammo <= Config.durabilityTick then return end
-					startFueling(entity)
-				end,
-				icon = "fas fa-gas-pump",
-				label = locale('start_fueling'),
-				canInteract = function (entity)
-					if isFueling or cache.vehicle or lib.progressActive() then
-						return false
+			distance = 2
+		})
+	end
+	if Config.petrolCan.enabled then
+		exports.qtarget:Vehicle({
+			options = {
+				{
+					action = function (entity)
+						local petrolCan = GetSelectedPedWeapon(cache.ped) == `WEAPON_PETROLCAN`
+						if not petrolCan then return lib.notify({type = 'error', description = locale('petrolcan_not_equipped')}) end
+						if fuelingCan.metadata.ammo <= Config.durabilityTick then return end
+						startFueling(entity)
+					end,
+					icon = "fas fa-gas-pump",
+					label = locale('start_fueling'),
+					canInteract = function (entity)
+						if isFueling or cache.vehicle or lib.progressActive() then
+							return false
+						end
+						return fuelingCan and Config.petrolCan.enabled
 					end
-					return fuelingCan and Config.petrolCan.enabled
-				end
-			}
-		},
-		distance = 2
-	})
+				}
+			},
+			distance = 2
+		})
+	end
 end
 
 AddTextEntry('fuelHelpText', locale('fuel_help'))
