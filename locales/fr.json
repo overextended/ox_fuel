@@ -14,5 +14,6 @@
 	"fuel_success": "Rempli à %s - $%s",
 	"petrolcan_refill": "Vous avez payé $%s pour remplir votre jerrican",
 	"petrolcan_buy": "Vous avez payé $%s pour un jerrican",
-	"petrolcan_cannot_carry": "Vous ne pouvez pas porter ce jerrican"
+	"petrolcan_cannot_carry": "Vous ne pouvez pas porter ce jerrican",
+	"petrolcan_not_enough_fuel": "Vous n'avez plus assez d'essence dans ce jerrican"
 }
