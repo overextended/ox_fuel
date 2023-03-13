@@ -1,0 +1,18 @@
+{
+	"tank_full": "此载具的油箱已满!",
+	"petrolcan_cannot_afford": "当前暂无足够现金可支付购买汽油桶",
+	"refuel_cannot_afford": "当前暂无足够现金为您的载具加油",
+	"vehicle_far": "检测不到附近载具",
+	"pump_fuel_with_can": "使用油泵加油时, 请勿持有汽油桶!",
+	"fuel_help": "键下 ~INPUT_C2939D45~ 开始加油",
+	"petrolcan_help": "键下 ~INPUT_C2939D45~ 购买/补充汽油桶",
+	"leave_vehicle": "当前处于载具内, 请下车继而开始加油!",
+	"start_fueling": "开始加油",
+	"petrolcan_buy_or_refill": "购买/补充汽油桶",
+	"fuel_station_blip": "加油站",
+	"not_enough_money": "暂无足够现金! 还需支付:$%s",
+	"fuel_success": "载具:%s完成加油 - 支付$%s",
+	"petrolcan_refill": "已支付$%s 补充汽油桶内油量",
+	"petrolcan_buy": "已支付$%s购买新的汽油桶",
+	"petrolcan_cannot_carry": "背包已达上限重量, 无法携带!"
+}
