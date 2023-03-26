@@ -266,6 +266,8 @@ local function startFueling(vehicle, isPump)
 		Wait(Config.refillTick)
 	end
 
+	ClearPedTasks(cache.ped)
+
 	if isPump then
 		TriggerServerEvent('ox_fuel:pay', price, fuel, NetworkGetNetworkIdFromEntity(vehicle))
 	else
@@ -274,7 +276,7 @@ local function startFueling(vehicle, isPump)
 end
 
 local function getPetrolCan(pumpCoord, refuel)
-	TaskTurnPedToFaceCoord(cache.ped, pumpCoord, Config.petrolCan.duration)
+	TaskTurnPedToFaceCoord(cache.ped, pumpCoord.x, pumpCoord.y, pumpCoord.z, Config.petrolCan.duration)
 	Wait(500)
 
 	if lib.progressCircle({
@@ -298,6 +300,8 @@ local function getPetrolCan(pumpCoord, refuel)
 
 		TriggerServerEvent('ox_fuel:fuelCan', false, Config.petrolCan.price)
 	end
+
+	ClearPedTasks(cache.ped)
 end
 
 if not Config.qtarget then
