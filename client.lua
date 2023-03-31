@@ -243,7 +243,7 @@ local function startFueling(vehicle, isPump)
 		if isPump then
 			price += Config.priceTick
 
-			if price >= moneyAmount then
+			if price + Config.priceTick >= moneyAmount then
 				lib.cancelProgress()
 			end
 		else
