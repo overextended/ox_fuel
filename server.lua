@@ -26,10 +26,32 @@ local function setFuelState(netid, fuel)
 	end
 end
 
+---@param playerId number
+---@param price number
+---@return boolean?
+local function defaultPaymentMethod(playerId, price)
+	local success = ox_inventory:RemoveItem(playerId, 'money', price)
+
+	if success then return true end
+
+	local money = ox_inventory:GetItem(source, 'money', false, true)
+
+	TriggerClientEvent('ox_lib:notify', source, {
+		type = 'error',
+		description = locale('not_enough_money', price - money)
+	})
+end
+
+local payMoney = defaultPaymentMethod
+
+exports('setPaymentMethod', function(fn)
+	payMoney = fn or defaultPaymentMethod
+end)
+
 RegisterNetEvent('ox_fuel:pay', function(price, fuel, netid)
 	assert(type(price) == 'number', ('Price expected a number, received %s'):format(type(price)))
 
-	ox_inventory:RemoveItem(source, 'money', price)
+	if not payMoney(source, price) then return end
 
 	fuel = math.floor(fuel)
 	setFuelState(netid, fuel)
@@ -41,25 +63,20 @@ RegisterNetEvent('ox_fuel:pay', function(price, fuel, netid)
 end)
 
 RegisterNetEvent('ox_fuel:fuelCan', function(hasCan, price)
-	local money = ox_inventory:GetItem(source, 'money', false, true)
-
-	if not isMoneyEnough(money, price) then return false end
-
 	if hasCan then
 		local item = ox_inventory:GetCurrentWeapon(source)
 
-		if item then
-			item.metadata.durability = 100
-			item.metadata.ammo = 100
+		if not item or item.name ~= 'WEAPON_PETROLCAN' or not payMoney(source, price) then return end
 
-			ox_inventory:SetMetadata(source, item.slot, item.metadata)
-			ox_inventory:RemoveItem(source, 'money', price)
+		item.metadata.durability = 100
+		item.metadata.ammo = 100
 
-			TriggerClientEvent('ox_lib:notify', source, {
-				type = 'success',
-				description = locale('petrolcan_refill', price)
-			})
-		end
+		ox_inventory:SetMetadata(source, item.slot, item.metadata)
+
+		TriggerClientEvent('ox_lib:notify', source, {
+			type = 'success',
+			description = locale('petrolcan_refill', price)
+		})
 	else
 		if not ox_inventory:CanCarryItem(source, 'WEAPON_PETROLCAN', 1) then
 			return TriggerClientEvent('ox_lib:notify', source, {
@@ -68,8 +85,9 @@ RegisterNetEvent('ox_fuel:fuelCan', function(hasCan, price)
 			})
 		end
 
+		if not payMoney(source, price) then return end
+
 		ox_inventory:AddItem(source, 'WEAPON_PETROLCAN', 1)
-		ox_inventory:RemoveItem(source, 'money', price)
 
 		TriggerClientEvent('ox_lib:notify', source, {
 			type = 'success',
