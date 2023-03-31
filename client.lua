@@ -185,6 +185,17 @@ end
 
 local ox_inventory = exports.ox_inventory
 
+---@return number
+local function defaultMoneyCheck()
+	return ox_inventory:Search('count', 'money')
+end
+
+local getMoneyAmount = defaultMoneyCheck
+
+exports('setMoneyCheck', function(fn)
+	getMoneyAmount = fn or defaultMoneyCheck
+end)
+
 -- fuelingMode = 1 - Pump
 -- fuelingMode = 2 - Can
 local function startFueling(vehicle, isPump)
@@ -200,7 +211,7 @@ local function startFueling(vehicle, isPump)
 
 	if isPump then
 		price = 0
-		moneyAmount = ox_inventory:Search(2, 'money')
+		moneyAmount = getMoneyAmount()
 
 		if Config.priceTick > moneyAmount then
 			return lib.notify({
@@ -314,7 +325,7 @@ if not Config.qtarget then
 		local playerCoords = GetEntityCoords(cache.ped)
 
 		if nearestPump then
-			local moneyAmount = ox_inventory:Search(2, 'money')
+			local moneyAmount = getMoneyAmount()
 
 			if petrolCan and moneyAmount >= Config.petrolCan.refillPrice then
 				return getPetrolCan(nearestPump, true)
@@ -365,7 +376,7 @@ if Config.qtarget then
 			options = {
 				{
 					action = function (entity)
-						if ox_inventory:Search(2, 'money') >= Config.priceTick then
+						if getMoneyAmount() >= Config.priceTick then
 							startFueling(lastVehicle, 1)
 						else
 							lib.notify({type = 'error', description = locale('refuel_cannot_afford')})
@@ -384,7 +395,7 @@ if Config.qtarget then
 				{
 					action = function (entity)
 						local petrolCan = Config.petrolCan.enabled and GetSelectedPedWeapon(cache.ped) == `WEAPON_PETROLCAN`
-						local moneyAmount = ox_inventory:Search(2, 'money')
+						local moneyAmount = getMoneyAmount()
 
 						if moneyAmount < Config.petrolCan.price then
 							return lib.notify({type = 'error', description = locale('petrolcan_cannot_afford')})
@@ -403,7 +414,7 @@ if Config.qtarget then
 			options = {
 				{
 					action = function (entity)
-						if ox_inventory:Search(2, 'money') >= Config.priceTick then
+						if getMoneyAmount() >= Config.priceTick then
 							if GetVehicleFuelLevel(lastVehicle) >= 100 then
 								return lib.notify({type = 'error', description = locale('vehicle_full')})
 							end
