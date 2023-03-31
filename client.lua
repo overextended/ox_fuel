@@ -316,7 +316,7 @@ if not Config.qtarget then
 		if nearestPump then
 			local moneyAmount = ox_inventory:Search(2, 'money')
 
-			if petrolCan and moneyAmount >= Config.petrolCan.price then
+			if petrolCan and moneyAmount >= Config.petrolCan.refillPrice then
 				return getPetrolCan(nearestPump, true)
 			end
 
