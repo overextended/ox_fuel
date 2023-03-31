@@ -14,5 +14,7 @@
 	"fuel_success": "载具:%s完成加油 - 支付$%s",
 	"petrolcan_refill": "已支付$%s 补充汽油桶内油量",
 	"petrolcan_buy": "已支付$%s购买新的汽油桶",
-	"petrolcan_cannot_carry": "背包已达上限重量, 无法携带!"
+	"petrolcan_cannot_carry": "背包已达上限重量, 无法携带!",
+	"petrolcan_not_enough_fuel": "你的汽油桶没有足够的燃料",
+	"petrolcan_not_equipped": "你需要拿起你的汽油桶"
 }
