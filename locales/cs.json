@@ -14,5 +14,7 @@
 	"fuel_success": "Natankováno na %s - $%s",
 	"petrolcan_refill": "Zaplaceno $%s za doplnění kanystru",
 	"petrolcan_buy": "Zaplaceno $%s za kanystr",
-	"petrolcan_cannot_carry": "Neunesete kanystr"
+	"petrolcan_cannot_carry": "Neunesete kanystr",
+	"petrolcan_not_enough_fuel": "Kanystr nemá v sobě dostatek paliva",
+	"petrolcan_not_equipped": "Musíš mít v ruce kanystr, aby jsi mohl natankovat"
 }
