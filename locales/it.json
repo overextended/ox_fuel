@@ -2,11 +2,11 @@
 	"tank_full": "Il serbatoio di questo veicolo è pieno",
 	"petrolcan_cannot_afford": "Non puoi permetterti una tanica di benzina",
 	"refuel_cannot_afford": "Non puoi permetterti di fare rifornimento al tuo veicolo",
-	"vehicle_far": "Il yuo veicolo è troppo lontano",
+	"vehicle_far": "Il tuo veicolo è troppo lontano",
 	"pump_fuel_with_can": "Metti via la tanica prima di fare rifornimento con la pompa",
 	"fuel_help": "Premi ~INPUT_C2939D45~ per fare rifornimento",
 	"petrolcan_help": "Premi ~INPUT_C2939D45~ per acquistare o riempire una tanica di carburante",
-	"leave_vehicle": "Uscire dal veicolo per poter iniziare a fare rifornimento",
+	"leave_vehicle": "Uscire dal veicolo per poter iniziare il rifornimento",
 	"start_fueling": "Inizia rifornimento",
 	"petrolcan_buy_or_refill": "Compra o riempi una tanica di carburante",
 	"fuel_station_blip": "Stazione di rifornimento",
@@ -14,5 +14,7 @@
 	"fuel_success": "Rifornito a %s - $%s",
 	"petrolcan_refill": " Hai pagato $%s per aver riempito la tanica di carburante",
 	"petrolcan_buy": "Hai pagato $%s per una tanica di carburante",
-	"petrolcan_cannot_carry": "Non puoi trasportare questa tanica di carburante"
+	"petrolcan_cannot_carry": "Non puoi trasportare questa tanica di carburante",
+	"petrolcan_not_enough_fuel": "La tua tanica non ha abbastanza carburante",
+	"petrolcan_not_equipped": "Devi prendere la tua tanica di carburante"
 }
