@@ -1,0 +1,20 @@
+{
+    "tank_full": "Bu aracın deposu dolu",
+    "petrolcan_cannot_afford": "Bir benzin bidonu alacak paranız yok",
+    "refuel_cannot_afford": "Araç benzininizi dolduracak paranız yok",
+    "vehicle_far": "Araç çok uzakta",
+    "pump_fuel_with_can": "Pompadan benzin almadan önce bidonunuzu kaldırın",
+    "fuel_help": "~INPUT_C2939D45~ tuşuna basarak benzin alın",
+    "petrolcan_help": "~INPUT_C2939D45~ tuşuna basarak benzin bidonu satın alın veya doldurun",
+    "leave_vehicle": "Benzin alabilmek için araçtan çıkın",
+    "start_fueling": "Benzin almayı başlatın",
+    "petrolcan_buy_or_refill": "Bir benzin bidonu satın alın veya doldurun",
+    "fuel_station_blip": "Benzin istasyonu",
+    "not_enough_money": "Yeterli para yok! Eksik $%s",
+    "fuel_success": "%s kadar benzin alındı - $%s",
+    "petrolcan_refill": "Benzin bidonunu doldurmak için $%s ödediniz",
+    "petrolcan_buy": "Bir benzin bidonu için $%s ödediniz",
+    "petrolcan_cannot_carry": "Bu benzin bidonunu taşıyamazsınız",
+    "petrolcan_not_enough_fuel": "Benzin bidonunuzda yeterli benzin yok",
+    "petrolcan_not_equipped": "Benzin almak için benzin bidonunuzu kullanmanız gerekiyor"
+}
