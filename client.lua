@@ -26,6 +26,8 @@ end
 
 local function setFuel(state, vehicle, fuel, replicate)
 	if DoesEntityExist(vehicle) then
+		if fuel < 0 then fuel = 0 end
+
 		SetVehicleFuelLevel(vehicle, fuel)
 
 		if not state.fuel then
