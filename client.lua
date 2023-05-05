@@ -67,13 +67,13 @@ lib.onCache('seat', function(seat)
 			local fuelTick = 0
 
 			while cache.seat == -1 do
-				if GetIsVehicleEngineRunning(vehicle) then
-					local usage = Config.rpmUsage[math.floor(GetVehicleCurrentRpm(vehicle) * 10) / 10]
-					local fuel = state.fuel
-					local newFuel = fuel - usage * multiplier
+				local fuel = state.fuel
+				local newFuel = fuel
 
-					if newFuel < 0 or newFuel > 100 then
-						newFuel = fuel
+				if fuel > 0 then
+					if GetIsVehicleEngineRunning(vehicle) then
+						local usage = Config.rpmUsage[math.floor(GetVehicleCurrentRpm(vehicle) * 10) / 10]
+						newFuel -= usage * multiplier
 					end
 
 					if fuel ~= newFuel then
