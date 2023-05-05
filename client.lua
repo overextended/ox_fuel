@@ -321,9 +321,26 @@ local function getPetrolCan(pumpCoord, refuel)
 	ClearPedTasks(cache.ped)
 end
 
-if not Config.qtarget then
-	local bones = {'wheel_rr', 'wheel_lr'}
+local bones = {
+	'petrolcap',
+	'petroltank',
+	'petroltank_l',
+	'hub_lr',
+	'engine',
+}
 
+local function getVehiclePetrolCapBoneIndex(vehicle)
+	for i = 1, #bones do
+		local boneIndex = GetEntityBoneIndexByName(vehicle, bones[i])
+
+		if boneIndex ~= -1 then
+			-- print(boneIndex, bones[i])
+			return boneIndex
+		end
+	end
+end
+
+if not Config.qtarget then
 	RegisterCommand('startfueling', function()
 		if isFueling or cache.vehicle or lib.progressActive() then return end
 
@@ -358,12 +375,15 @@ if not Config.qtarget then
 			local vehicle = raycast()
 
 			if vehicle then
-				for i = 1, #bones do
-					local fuelcapPosition = GetWorldPositionOfEntityBone(vehicle, GetEntityBoneIndexByName(vehicle, bones[i]))
+				local hasFuel = Config.classUsage[GetVehicleClass(vehicle)] or true
 
-					if #(playerCoords - fuelcapPosition) < 1.3 then
-						return startFueling(vehicle, false)
-					end
+				if hasFuel == 0.0 then return end
+
+				local boneIndex = getVehiclePetrolCapBoneIndex(vehicle)
+				local fuelcapPosition = boneIndex and GetWorldPositionOfEntityBone(vehicle, boneIndex)
+
+				if fuelcapPosition and #(playerCoords - fuelcapPosition) < 1.8 then
+					return startFueling(vehicle, false)
 				end
 
 				return lib.notify({type = 'error', description = locale('vehicle_far')})
