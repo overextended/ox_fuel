@@ -1,6 +1,6 @@
 lib.locale()
 
-local fuelingCan = nil
+local fuelingCan = lib.checkDependency('ox_inventory', '2.23.0') and exports.ox_inventory:getCurrentWeapon()
 
 AddEventHandler('ox_inventory:currentWeapon', function(currentWeapon)
 	fuelingCan = currentWeapon?.name == 'WEAPON_PETROLCAN' and currentWeapon
@@ -38,7 +38,7 @@ local function setFuel(state, vehicle, fuel, replicate)
 	end
 end
 
-local lastVehicle
+local lastVehicle = cache.vehicle or GetPlayersLastVehicle()
 
 lib.onCache('seat', function(seat)
 	if cache.vehicle then
