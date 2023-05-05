@@ -76,6 +76,10 @@ lib.onCache('seat', function(seat)
 						newFuel -= usage * multiplier
 					end
 
+					if GetVehiclePetrolTankHealth(vehicle) < 700 then
+						newFuel -= math.random(10, 20) * 0.01
+					end
+
 					if fuel ~= newFuel then
 						if fuelTick == 15 then
 							fuelTick = 0
