@@ -23,12 +23,12 @@ shared_scripts {
 }
 
 server_scripts {
-	'server.lua'
+	'server/server.lua'
 }
 
 client_scripts {
-	'data/stations.lua',
-	'client.lua'
+	'client/data/stations.lua',
+	'client/client.lua'
 }
 
 files {
