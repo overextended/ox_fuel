@@ -14,7 +14,7 @@ end)
 local function raycast(flag)
 	local playerCoords = GetEntityCoords(cache.ped)
 	local plyOffset = GetOffsetFromEntityInWorldCoords(cache.ped, 0.0, 2.2, -0.25)
-	local rayHandle = StartShapeTestCapsule(playerCoords.x, playerCoords.y, playerCoords.z + 0.5, plyOffset.x, plyOffset.y, plyOffset.z, 2.2, flag or 30, cache.ped)
+	local rayHandle = StartShapeTestCapsule(playerCoords.x, playerCoords.y, playerCoords.z + 0.5, plyOffset.x, plyOffset.y, plyOffset.z, 2.2, flag or 30, cache.ped, 4)
 	while true do
 		Wait(0)
 		local result, _, _, _, entityHit = GetShapeTestResult(rayHandle)
@@ -230,7 +230,9 @@ local function startFueling(vehicle, isPump)
 				description = locale('not_enough_money', Config.priceTick)
 			})
 		end
-	elseif Config.durabilityTick > fuelingCan.metadata.ammo then
+	elseif not fuelingCan then
+		return lib.notify({type = 'error', description = locale('petrolcan_not_equipped')})
+	elseif fuelingCan.metadata.ammo <= Config.durabilityTick then
 		return lib.notify({
 			type = 'error',
 			description = locale('petrolcan_not_enough_fuel')
@@ -473,9 +475,17 @@ if Config.qtarget then
 			options = {
 				{
 					action = function (entity)
-						local petrolCan = GetSelectedPedWeapon(cache.ped) == `WEAPON_PETROLCAN`
-						if not petrolCan then return lib.notify({type = 'error', description = locale('petrolcan_not_equipped')}) end
-						if fuelingCan.metadata.ammo <= Config.durabilityTick then return end
+						if not fuelingCan then
+							return lib.notify({type = 'error', description = locale('petrolcan_not_equipped')})
+						end
+
+						if fuelingCan.metadata.ammo <= Config.durabilityTick then
+							return lib.notify({
+								type = 'error',
+								description = locale('petrolcan_not_enough_fuel')
+							})
+						end
+
 						startFueling(entity)
 					end,
 					icon = "fas fa-gas-pump",
