@@ -10,22 +10,19 @@ AddEventHandler('ox_inventory:currentWeapon', function(currentWeapon)
 	fuelingCan = currentWeapon?.name == 'WEAPON_PETROLCAN' and currentWeapon
 end)
 
-local function raycast(flag)
-	local playerCoords = GetEntityCoords(cache.ped)
-	local plyOffset = GetOffsetFromEntityInWorldCoords(cache.ped, 0.0, 2.2, -0.25)
-	local rayHandle = StartShapeTestCapsule(playerCoords.x, playerCoords.y, playerCoords.z + 0.5, plyOffset.x, plyOffset.y, plyOffset.z, 2.2, flag or 30, cache.ped, 4)
-	while true do
-		Wait(0)
-		local result, _, _, _, entityHit = GetShapeTestResult(rayHandle)
+local function getVehicleInFront()
+    local coords = GetEntityCoords(cache.ped)
+	local destination = GetOffsetFromEntityInWorldCoords(cache.ped, 0.0, 2.2, -0.25)
+    local handle = StartShapeTestCapsule(coords.x, coords.y, coords.z, destination.x, destination.y, destination.z, 2.2, 2, cache.ped, 4)
 
-		if result ~= 1 then
-			if entityHit and GetEntityType(entityHit) == 2 then
-				return entityHit
-			end
+    while true do
+        Wait(0)
+        local retval, _, _, _, entityHit = GetShapeTestResult(handle)
 
-			return false
-		end
-	end
+        if retval ~= 1 then
+            return entityHit ~= 0 and entityHit
+        end
+    end
 end
 
 local function setFuel(state, vehicle, fuel, replicate)
@@ -379,7 +376,7 @@ if not Config.ox_target then
 
 			return lib.notify({type = 'error', description = locale('vehicle_far')})
 		elseif petrolCan then
-			local vehicle = raycast()
+			local vehicle = getVehicleInFront()
 
 			if vehicle then
 				local hasFuel = Config.classUsage[GetVehicleClass(vehicle)] or true
