@@ -98,8 +98,6 @@ RegisterNetEvent('ox_fuel:updateFuelCan', function(durability, netid, fuel)
 
 		ox_inventory:SetMetadata(source, item.slot, item.metadata)
 		setFuelState(netid, fuel)
-		Wait(0)
-		return TriggerClientEvent('ox_inventory:disarm', source)
 	end
 
 	-- player is sus?
