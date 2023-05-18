@@ -1,3 +1,7 @@
+if not lib.checkDependency('ox_lib', '3.0.0', true) then return end
+
+if not lib.checkDependency('ox_inventory', '2.28.4', true) then return end
+
 lib.locale()
 
 if Config.versionCheck then lib.versionCheck('overextended/ox_fuel') end

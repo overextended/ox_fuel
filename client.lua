@@ -1,6 +1,11 @@
+
+if not lib.checkDependency('ox_lib', '3.0.0', true) then return end
+
+if not lib.checkDependency('ox_inventory', '2.28.4', true) then return end
+
 lib.locale()
 
-local fuelingCan = lib.checkDependency('ox_inventory', '2.23.0') and exports.ox_inventory:getCurrentWeapon()
+local fuelingCan = exports.ox_inventory:getCurrentWeapon()
 
 AddEventHandler('ox_inventory:currentWeapon', function(currentWeapon)
 	fuelingCan = currentWeapon?.name == 'WEAPON_PETROLCAN' and currentWeapon
