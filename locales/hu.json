@@ -14,5 +14,7 @@
 	"fuel_success": "Tankoltál %s - $%s",
 	"petrolcan_refill": "Kifizettél $%s-t a kanna újratöltéséért",
 	"petrolcan_buy": "Kifizettél $%s-t a kannáért",
-	"petrolcan_cannot_carry": "Ezt a kannát nem szállíthatod"
+	"petrolcan_cannot_carry": "Ezt a kannát nem szállíthatod",
+	"petrolcan_not_enough_fuel": "Nincs elég üzemanyag a kannában",
+	"petrolcan_not_equipped": "Elő kell venned az üzemanyagkannát"
 }
