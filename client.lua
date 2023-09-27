@@ -1,31 +1,34 @@
+if not lib.checkDependency('ox_lib', '3.0.0', true) then return end
+
+if not lib.checkDependency('ox_inventory', '2.28.4', true) then return end
+
 lib.locale()
 
-local fuelingCan = nil
+local fuelingCan = exports.ox_inventory:getCurrentWeapon()
 
 AddEventHandler('ox_inventory:currentWeapon', function(currentWeapon)
 	fuelingCan = currentWeapon?.name == 'WEAPON_PETROLCAN' and currentWeapon
 end)
 
-local function raycast(flag)
-	local playerCoords = GetEntityCoords(cache.ped)
-	local plyOffset = GetOffsetFromEntityInWorldCoords(cache.ped, 0.0, 2.2, -0.25)
-	local rayHandle = StartShapeTestCapsule(playerCoords.x, playerCoords.y, playerCoords.z + 0.5, plyOffset.x, plyOffset.y, plyOffset.z, 2.2, flag or 30, cache.ped)
-	while true do
-		Wait(0)
-		local result, _, _, _, entityHit = GetShapeTestResult(rayHandle)
+local function getVehicleInFront()
+    local coords = GetEntityCoords(cache.ped)
+	local destination = GetOffsetFromEntityInWorldCoords(cache.ped, 0.0, 2.2, -0.25)
+    local handle = StartShapeTestCapsule(coords.x, coords.y, coords.z, destination.x, destination.y, destination.z, 2.2, 2, cache.ped, 4)
 
-		if result ~= 1 then
-			if entityHit and GetEntityType(entityHit) == 2 then
-				return entityHit
-			end
+    while true do
+        Wait(0)
+        local retval, _, _, _, entityHit = GetShapeTestResult(handle)
 
-			return false
-		end
-	end
+        if retval ~= 1 then
+            return entityHit ~= 0 and entityHit
+        end
+    end
 end
 
 local function setFuel(state, vehicle, fuel, replicate)
 	if DoesEntityExist(vehicle) then
+		if fuel < 0 then fuel = 0 end
+
 		SetVehicleFuelLevel(vehicle, fuel)
 
 		if not state.fuel then
@@ -36,7 +39,7 @@ local function setFuel(state, vehicle, fuel, replicate)
 	end
 end
 
-local lastVehicle
+local lastVehicle = cache.vehicle or GetPlayersLastVehicle()
 
 lib.onCache('seat', function(seat)
 	if cache.vehicle then
@@ -65,13 +68,17 @@ lib.onCache('seat', function(seat)
 			local fuelTick = 0
 
 			while cache.seat == -1 do
-				if GetIsVehicleEngineRunning(vehicle) then
-					local usage = Config.rpmUsage[math.floor(GetVehicleCurrentRpm(vehicle) * 10) / 10]
-					local fuel = state.fuel
-					local newFuel = fuel - usage * multiplier
+				local fuel = state.fuel
+				local newFuel = fuel
 
-					if newFuel < 0 or newFuel > 100 then
-						newFuel = fuel
+				if fuel > 0 then
+					if GetIsVehicleEngineRunning(vehicle) then
+						local usage = Config.rpmUsage[math.floor(GetVehicleCurrentRpm(vehicle) * 10) / 10]
+						newFuel -= usage * multiplier
+					end
+
+					if GetVehiclePetrolTankHealth(vehicle) < 700 then
+						newFuel -= math.random(10, 20) * 0.01
 					end
 
 					if fuel ~= newFuel then
@@ -112,7 +119,8 @@ end
 
 CreateThread(function()
 	local blip
-	if Config.qtarget and Config.showBlips ~= 1 then return end
+
+	if Config.ox_target and Config.showBlips ~= 1 then return end
 
 	while true do
 		local playerCoords = GetEntityCoords(cache.ped)
@@ -124,7 +132,7 @@ CreateThread(function()
 					blip = createBlip(station)
 				end
 
-				if not Config.qtarget then
+				if not Config.ox_target then
 					repeat
 						if stationDistance < 15 then
 							local pumpDistance
@@ -219,7 +227,9 @@ local function startFueling(vehicle, isPump)
 				description = locale('not_enough_money', Config.priceTick)
 			})
 		end
-	elseif Config.durabilityTick > fuelingCan.metadata.ammo then
+	elseif not fuelingCan then
+		return lib.notify({type = 'error', description = locale('petrolcan_not_equipped')})
+	elseif fuelingCan.metadata.ammo <= Config.durabilityTick then
 		return lib.notify({
 			type = 'error',
 			description = locale('petrolcan_not_enough_fuel')
@@ -315,9 +325,26 @@ local function getPetrolCan(pumpCoord, refuel)
 	ClearPedTasks(cache.ped)
 end
 
-if not Config.qtarget then
-	local bones = {'wheel_rr', 'wheel_lr'}
+local bones = {
+	'petrolcap',
+	'petroltank',
+	'petroltank_l',
+	'hub_lr',
+	'engine',
+}
 
+local function getVehiclePetrolCapBoneIndex(vehicle)
+	for i = 1, #bones do
+		local boneIndex = GetEntityBoneIndexByName(vehicle, bones[i])
+
+		if boneIndex ~= -1 then
+			-- print(boneIndex, bones[i])
+			return boneIndex
+		end
+	end
+end
+
+if not Config.ox_target then
 	RegisterCommand('startfueling', function()
 		if isFueling or cache.vehicle or lib.progressActive() then return end
 
@@ -349,15 +376,18 @@ if not Config.qtarget then
 
 			return lib.notify({type = 'error', description = locale('vehicle_far')})
 		elseif petrolCan then
-			local vehicle = raycast()
+			local vehicle = getVehicleInFront()
 
 			if vehicle then
-				for i = 1, #bones do
-					local fuelcapPosition = GetWorldPositionOfEntityBone(vehicle, GetEntityBoneIndexByName(vehicle, bones[i]))
+				local hasFuel = Config.classUsage[GetVehicleClass(vehicle)] or true
 
-					if #(playerCoords - fuelcapPosition) < 1.3 then
-						return startFueling(vehicle, false)
-					end
+				if hasFuel == 0.0 then return end
+
+				local boneIndex = getVehiclePetrolCapBoneIndex(vehicle)
+				local fuelcapPosition = boneIndex and GetWorldPositionOfEntityBone(vehicle, boneIndex)
+
+				if fuelcapPosition and #(playerCoords - fuelcapPosition) < 1.8 then
+					return startFueling(vehicle, false)
 				end
 
 				return lib.notify({type = 'error', description = locale('vehicle_far')})
@@ -370,94 +400,97 @@ if not Config.qtarget then
 end
 
 
-if Config.qtarget then
+if Config.ox_target then
 	if Config.petrolCan.enabled then
-		exports.qtarget:AddTargetModel(Config.pumpModels, {
-			options = {
-				{
-					action = function (entity)
-						if getMoneyAmount() >= Config.priceTick then
-							startFueling(lastVehicle, 1)
-						else
-							lib.notify({type = 'error', description = locale('refuel_cannot_afford')})
-						end
-					end,
-					icon = "fas fa-gas-pump",
-					label = locale('start_fueling'),
-					canInteract = function (entity)
-						if isFueling or cache.vehicle or lib.progressActive() then
-							return false
-						end
-
-						return lastVehicle and #(GetEntityCoords(lastVehicle) - GetEntityCoords(cache.ped)) <= 3
+		exports.ox_target:addModel(Config.pumpModels, {
+			{
+				distance = 2,
+				onSelect = function()
+					if getMoneyAmount() >= Config.priceTick then
+						startFueling(lastVehicle, 1)
+					else
+						lib.notify({type = 'error', description = locale('refuel_cannot_afford')})
 					end
-				},
-				{
-					action = function (entity)
-						local petrolCan = Config.petrolCan.enabled and GetSelectedPedWeapon(cache.ped) == `WEAPON_PETROLCAN`
-						local moneyAmount = getMoneyAmount()
+				end,
+				icon = "fas fa-gas-pump",
+				label = locale('start_fueling'),
+				canInteract = function(entity)
+					if isFueling or cache.vehicle or lib.progressActive() then
+						return false
+					end
 
-						if moneyAmount < Config.petrolCan.price then
-							return lib.notify({type = 'error', description = locale('petrolcan_cannot_afford')})
-						end
-
-						return getPetrolCan(GetEntityCoords(entity), petrolCan)
-					end,
-					icon = "fas fa-faucet",
-					label = locale('petrolcan_buy_or_refill'),
-				},
+					return lastVehicle and #(GetEntityCoords(lastVehicle) - GetEntityCoords(cache.ped)) <= 3
+				end
 			},
-			distance = 2
+			{
+				distance = 2,
+				onSelect = function(data)
+					local petrolCan = Config.petrolCan.enabled and GetSelectedPedWeapon(cache.ped) == `WEAPON_PETROLCAN`
+					local moneyAmount = getMoneyAmount()
+
+					if moneyAmount < Config.petrolCan.price then
+						return lib.notify({type = 'error', description = locale('petrolcan_cannot_afford')})
+					end
+
+					return getPetrolCan(data.coords, petrolCan)
+				end,
+				icon = "fas fa-faucet",
+				label = locale('petrolcan_buy_or_refill'),
+			},
 		})
 	else
-		exports.qtarget:AddTargetModel(Config.pumpModels, {
-			options = {
-				{
-					action = function (entity)
-						if getMoneyAmount() >= Config.priceTick then
-							if GetVehicleFuelLevel(lastVehicle) >= 100 then
-								return lib.notify({type = 'error', description = locale('vehicle_full')})
-							end
-							startFueling(lastVehicle, 1)
-						else
-							lib.notify({type = 'error', description = locale('refuel_cannot_afford')})
+		exports.ox_target:addModel(Config.pumpModels, {
+			{
+				distance = 2,
+				onSelect = function()
+					if getMoneyAmount() >= Config.priceTick then
+						if GetVehicleFuelLevel(lastVehicle) >= 100 then
+							return lib.notify({type = 'error', description = locale('vehicle_full')})
 						end
-					end,
-					icon = "fas fa-gas-pump",
-					label = locale('start_fueling'),
-					canInteract = function (entity)
-						if isFueling or cache.vehicle then
-							return false
-						end
-
-						return lastVehicle and #(GetEntityCoords(lastVehicle) - GetEntityCoords(cache.ped)) <= 3
+						startFueling(lastVehicle, 1)
+					else
+						lib.notify({type = 'error', description = locale('refuel_cannot_afford')})
 					end
-				},
+				end,
+				icon = "fas fa-gas-pump",
+				label = locale('start_fueling'),
+				canInteract = function(entity)
+					if isFueling or cache.vehicle then
+						return false
+					end
+
+					return lastVehicle and #(GetEntityCoords(lastVehicle) - GetEntityCoords(cache.ped)) <= 3
+				end
 			},
-			distance = 2
 		})
 	end
 	if Config.petrolCan.enabled then
-		exports.qtarget:Vehicle({
-			options = {
-				{
-					action = function (entity)
-						local petrolCan = GetSelectedPedWeapon(cache.ped) == `WEAPON_PETROLCAN`
-						if not petrolCan then return lib.notify({type = 'error', description = locale('petrolcan_not_equipped')}) end
-						if fuelingCan.metadata.ammo <= Config.durabilityTick then return end
-						startFueling(entity)
-					end,
-					icon = "fas fa-gas-pump",
-					label = locale('start_fueling'),
-					canInteract = function (entity)
-						if isFueling or cache.vehicle or lib.progressActive() then
-							return false
-						end
-						return fuelingCan and Config.petrolCan.enabled
+		exports.ox_target:addGlobalVehicle({
+			{
+				distance = 2,
+				onSelect = function(data)
+					if not fuelingCan then
+						return lib.notify({type = 'error', description = locale('petrolcan_not_equipped')})
 					end
-				}
-			},
-			distance = 2
+
+					if fuelingCan.metadata.ammo <= Config.durabilityTick then
+						return lib.notify({
+							type = 'error',
+							description = locale('petrolcan_not_enough_fuel')
+						})
+					end
+
+					startFueling(data.entity)
+				end,
+				icon = "fas fa-gas-pump",
+				label = locale('start_fueling'),
+				canInteract = function(entity)
+					if isFueling or cache.vehicle or lib.progressActive() then
+						return false
+					end
+					return fuelingCan and Config.petrolCan.enabled
+				end
+			}
 		})
 	end
 end

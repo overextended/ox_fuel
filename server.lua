@@ -1,21 +1,12 @@
+if not lib.checkDependency('ox_lib', '3.0.0', true) then return end
+
+if not lib.checkDependency('ox_inventory', '2.28.4', true) then return end
+
 lib.locale()
 
 if Config.versionCheck then lib.versionCheck('overextended/ox_fuel') end
 
 local ox_inventory = exports.ox_inventory
-
-local function isMoneyEnough(money, price)
-	if money < price then
-		local missingMoney = price - money
-		TriggerClientEvent('ox_lib:notify', source, {
-			type = 'error',
-			description = locale('not_enough_money', missingMoney)
-		})
-		return false
-	else
-		return true
-	end
-end
 
 local function setFuelState(netid, fuel)
 	local vehicle = NetworkGetEntityFromNetworkId(netid)
@@ -107,8 +98,6 @@ RegisterNetEvent('ox_fuel:updateFuelCan', function(durability, netid, fuel)
 
 		ox_inventory:SetMetadata(source, item.slot, item.metadata)
 		setFuelState(netid, fuel)
-		Wait(0)
-		return TriggerClientEvent('ox_inventory:disarm', source)
 	end
 
 	-- player is sus?
