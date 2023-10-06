@@ -279,9 +279,9 @@ local function startFueling(vehicle, isPump)
 
 		fuel += Config.refillValue
 
-		if fuel >= 100 then
+		if fuel >= GetVehicleHandlingFloat(vehicle, 'CHandlingData', 'fPetrolTankVolume') then
 			isFueling = false
-			fuel = 100.0
+			fuel = GetVehicleHandlingFloat(vehicle, 'CHandlingData', 'fPetrolTankVolume')
 		end
 
 		Wait(Config.refillTick)
