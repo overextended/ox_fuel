@@ -44,7 +44,7 @@ RegisterNetEvent('ox_fuel:pay', function(price, fuel, netid)
 
 	if not payMoney(source, price) then return end
 
-	fuel = math.floor(fuel)
+	fuel = math.floor(fuel) + 0.0
 	setFuelState(netid, fuel)
 
 	TriggerClientEvent('ox_lib:notify', source, {
