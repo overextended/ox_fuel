@@ -209,11 +209,11 @@ end)
 local function startFueling(vehicle, isPump)
 	local Vehicle = Entity(vehicle).state
 	local fuel = Vehicle.fuel or GetVehicleFuelLevel(vehicle)
-	local duration = math.ceil((100 - fuel) / Config.refillValue) * Config.refillTick
+	local duration = math.ceil((GetVehicleHandlingFloat(vehicle, 'CHandlingData', 'fPetrolTankVolume') - fuel) / Config.refillValue) * Config.refillTick
 	local price, moneyAmount
 	local durability = 0
 
-	if 100 - fuel < Config.refillValue then
+	if GetVehicleHandlingFloat(vehicle, 'CHandlingData', 'fPetrolTankVolume') - fuel < Config.refillValue then
 		return lib.notify({type = 'error', description = locale('tank_full')})
 	end
 
@@ -444,7 +444,7 @@ if Config.ox_target then
 				distance = 2,
 				onSelect = function()
 					if getMoneyAmount() >= Config.priceTick then
-						if GetVehicleFuelLevel(lastVehicle) >= 100 then
+						if GetVehicleFuelLevel(lastVehicle) >= GetVehicleHandlingFloat(vehicle, 'CHandlingData', 'fPetrolTankVolume') then
 							return lib.notify({type = 'error', description = locale('vehicle_full')})
 						end
 						startFueling(lastVehicle, 1)
