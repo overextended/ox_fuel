@@ -13,6 +13,14 @@ Config = {
 	*/
 	showBlips = 1,
 
+	blip = {
+		sprite = 361,
+		display = 4,
+		scale = 0.8,
+		colour = 6,
+		shortRange = true,
+	},
+
 	-- What keys to disable while fueling
 	disabledKeys = { 0, 22, 23, 24, 29, 30, 31, 37, 44, 56, 82, 140, 166, 167, 168, 170, 288, 289, 311, 323 },
 
