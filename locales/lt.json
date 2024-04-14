@@ -1,0 +1,20 @@
+{
+  "tank_full": "Šio transporto priemonės bakas pilnas",
+  "petrolcan_cannot_afford": "Neturite pakankmai pinigų, benzino bakui",
+  "refuel_cannot_afford": "Neturite pakankamai pinigų pilti degalus į transporto priemonę",
+  "vehicle_far": "Jūsų transporto priemonė per toli",
+  "pump_fuel_with_can": "Prieš pilant degalus, padėkite degalų baką iš rankų",
+  "fuel_help": "Paspauskite ~INPUT_C2939D45~, kad piltumėte degalus",
+  "petrolcan_help": "Paspauskite ~INPUT_C2939D45~, kad pirktumėte, papildytumėte degalų baką",
+  "leave_vehicle": "Išeikite iš transporto priemones, kad galėtumėte pradėti pilti degalus",
+  "start_fueling": "Pradėti pilti degalus",
+  "petrolcan_buy_or_refill": "Pirkti arba papildyti degalų baką",
+  "fuel_station_blip": "Degalinė",
+  "not_enough_money": "Nepakanka pinigų! Trūksta $%s",
+  "fuel_success": "Papildytas iki %s - $%s",
+  "petrolcan_refill": "Apmokėta $%s už degalų bako papildymą",
+  "petrolcan_buy": "Apmokėta $%s už degalų baką",
+  "petrolcan_cannot_carry": "Negalite nešti šio degalų bako",
+  "petrolcan_not_enough_fuel": "Jūsų degalų bakas neturi pakankamai degalų",
+  "petrolcan_not_equipped": "Turite išsitraukti savo degalų baką"
+}
