@@ -1,8 +1,6 @@
-if not lib.checkDependency('ox_lib', '3.0.0', true) then return end
+if not lib.checkDependency('ox_lib', '3.22.0', true) then return end
 
-if not lib.checkDependency('ox_inventory', '2.28.4', true) then return end
-
-lib.locale()
+if not lib.checkDependency('ox_inventory', '2.30.0', true) then return end
 
 local fuelingCan = exports.ox_inventory:getCurrentWeapon()
 
@@ -27,15 +25,10 @@ end
 
 local function setFuel(state, vehicle, fuel, replicate)
 	if DoesEntityExist(vehicle) then
-		if fuel < 0 then fuel = 0 end
+		fuel = math.clamp(fuel, 0, 100)
 
 		SetVehicleFuelLevel(vehicle, fuel)
-
-		if not state.fuel then
-			TriggerServerEvent('ox_fuel:createStatebag', NetworkGetNetworkIdFromEntity(vehicle), fuel)
-		else
-			state:set('fuel', fuel, replicate)
-		end
+		state:set('fuel', fuel, replicate)
 	end
 end
 
@@ -59,7 +52,7 @@ lib.onCache('seat', function(seat)
 			local state = Entity(vehicle).state
 
 			if not state.fuel then
-				TriggerServerEvent('ox_fuel:createStatebag', NetworkGetNetworkIdFromEntity(vehicle), GetVehicleFuelLevel(vehicle))
+				state:set('fuel', GetVehicleFuelLevel(vehicle), true)
 				while not state.fuel do Wait(0) end
 			end
 
@@ -68,7 +61,7 @@ lib.onCache('seat', function(seat)
 			local fuelTick = 0
 
 			while cache.seat == -1 do
-				local fuel = state.fuel
+				local fuel = tonumber(state.fuel)
 				local newFuel = fuel
 
 				if fuel > 0 then
@@ -195,7 +188,7 @@ local ox_inventory = exports.ox_inventory
 
 ---@return number
 local function defaultMoneyCheck()
-	return ox_inventory:Search('count', 'money')
+	return ox_inventory:GetItemCount('money')
 end
 
 local getMoneyAmount = defaultMoneyCheck
@@ -267,7 +260,7 @@ local function startFueling(vehicle, isPump)
 			if price + Config.priceTick >= moneyAmount then
 				lib.cancelProgress()
 			end
-		else
+		elseif fuelingCan then
 			durability += Config.durabilityTick
 
 			if durability >= fuelingCan.metadata.ammo then
@@ -275,6 +268,8 @@ local function startFueling(vehicle, isPump)
 				durability = fuelingCan.metadata.ammo
 				break
 			end
+		else
+			break
 		end
 
 		fuel += Config.refillValue

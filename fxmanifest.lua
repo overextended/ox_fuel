@@ -34,3 +34,8 @@ client_scripts {
 files {
 	'locales/*.json'
 }
+
+ox_libs {
+	'math',
+	'locale',
+}

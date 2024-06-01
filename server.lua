@@ -1,20 +1,22 @@
-if not lib.checkDependency('ox_lib', '3.0.0', true) then return end
+if not lib.checkDependency('ox_lib', '3.22.0', true) then return end
 
-if not lib.checkDependency('ox_inventory', '2.28.4', true) then return end
-
-lib.locale()
+if not lib.checkDependency('ox_inventory', '2.30.0', true) then return end
 
 if Config.versionCheck then lib.versionCheck('overextended/ox_fuel') end
 
 local ox_inventory = exports.ox_inventory
 
-local function setFuelState(netid, fuel)
-	local vehicle = NetworkGetEntityFromNetworkId(netid)
-	local state = vehicle and Entity(vehicle)?.state
+local function setFuelState(netId, fuel)
+	local vehicle = NetworkGetEntityFromNetworkId(netId)
 
-	if state then
-		state:set('fuel', fuel, true)
+	if vehicle == 0 or GetEntityType(vehicle) ~= 2 then
+		return
 	end
+
+	local state = Entity(vehicle)?.state
+	fuel = math.clamp(fuel, 0, 100)
+
+	state:set('fuel', fuel, true)
 end
 
 ---@param playerId number
@@ -25,7 +27,7 @@ local function defaultPaymentMethod(playerId, price)
 
 	if success then return true end
 
-	local money = ox_inventory:GetItem(source, 'money', false, true)
+	local money = ox_inventory:GetItemCount(source, 'money')
 
 	TriggerClientEvent('ox_lib:notify', source, {
 		type = 'error',
@@ -101,13 +103,4 @@ RegisterNetEvent('ox_fuel:updateFuelCan', function(durability, netid, fuel)
 	end
 
 	-- player is sus?
-end)
-
-RegisterNetEvent('ox_fuel:createStatebag', function(netid, fuel)
-	local vehicle = NetworkGetEntityFromNetworkId(netid)
-	local state = vehicle and Entity(vehicle).state
-
-	if state and not state.fuel and GetEntityType(vehicle) == 2 and NetworkGetEntityOwner(vehicle) == source then
-		state:set('fuel', fuel > 100 and 100 or fuel, true)
-	end
 end)
