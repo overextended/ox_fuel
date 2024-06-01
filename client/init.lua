@@ -39,8 +39,6 @@ local function startDrivingVehicle()
 					fuelTick = 0
 				end
 
-				print('update fuel', fuel, fuel - newFuel)
-
 				utils.setFuel(state, vehicle, newFuel, fuelTick == 0)
 				fuelTick += 1
 			end
