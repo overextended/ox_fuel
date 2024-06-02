@@ -1,16 +1,18 @@
 local utils = {}
 
----@param state StateBag
----@param vehicle integer
----@param fuel number
----@param replicate? boolean
-function utils.setFuel(state, vehicle, fuel, replicate)
-	if DoesEntityExist(vehicle) then
-		fuel = math.clamp(fuel, 0, 100)
+---@param coords vector3
+---@return integer
+function utils.createBlip(coords)
+	local blip = AddBlipForCoord(coords.x, coords.y, coords.z)
+	SetBlipSprite(blip, 361)
+	SetBlipDisplay(blip, 4)
+	SetBlipScale(blip, 0.8)
+	SetBlipColour(blip, 6)
+	SetBlipAsShortRange(blip, true)
+	BeginTextCommandSetBlipName('ox_fuel_station')
+	EndTextCommandSetBlipName(blip)
 
-		SetVehicleFuelLevel(vehicle, fuel)
-		state:set('fuel', fuel, replicate)
-	end
+	return blip
 end
 
 function utils.getVehicleInFront()
@@ -37,6 +39,7 @@ local bones = {
 	'engine',
 }
 
+---@param vehicle integer
 function utils.getVehiclePetrolCapBoneIndex(vehicle)
 	for i = 1, #bones do
 		local boneIndex = GetEntityBoneIndexByName(vehicle, bones[i])
@@ -46,5 +49,16 @@ function utils.getVehiclePetrolCapBoneIndex(vehicle)
 		end
 	end
 end
+
+---@return number
+local function defaultMoneyCheck()
+	return exports.ox_inventory:GetItemCount('money')
+end
+
+utils.getMoney = defaultMoneyCheck
+
+exports('setMoneyCheck', function(fn)
+	utils.getMoney = fn or defaultMoneyCheck
+end)
 
 return utils
