@@ -12,6 +12,9 @@ AddTextEntry('ox_fuel_station', locale('fuel_station_blip'))
 
 local utils = require 'client.utils'
 local state = require 'client.state'
+local fuel  = require 'client.fuel'
+
+require 'client.stations'
 
 local function startDrivingVehicle()
 	local vehicle = cache.vehicle
@@ -32,22 +35,20 @@ local function startDrivingVehicle()
 	while cache.seat == -1 do
 		if not DoesEntityExist(vehicle) then return end
 
-		local fuel = tonumber(vehState.fuel)
+		local fuelAmount = tonumber(vehState.fuel)
 		local newFuel = GetVehicleFuelLevel(vehicle)
 
-		if fuel > 0 then
+		if fuelAmount > 0 then
 			if GetVehiclePetrolTankHealth(vehicle) < 700 then
 				newFuel -= math.random(10, 20) * 0.01
 			end
 
-			if fuel ~= newFuel then
+			if fuelAmount ~= newFuel then
 				if fuelTick == 15 then
 					fuelTick = 0
 				end
 
-				print('update fuel', fuel, fuel - newFuel)
-
-				utils.setFuel(vehState, vehicle, newFuel, fuelTick == 0)
+				fuel.setFuel(vehState, vehicle, newFuel, fuelTick == 0)
 				fuelTick += 1
 			end
 		end
@@ -55,7 +56,7 @@ local function startDrivingVehicle()
 		Wait(1000)
 	end
 
-	utils.setFuel(vehState, vehicle, vehState.fuel, true)
+	fuel.setFuel(vehState, vehicle, vehState.fuel, true)
 end
 
 if cache.seat == -1 then CreateThread(startDrivingVehicle) end
@@ -77,13 +78,13 @@ RegisterCommand('startfueling', function()
 
 	local petrolCan = config.petrolCan.enabled and GetSelectedPedWeapon(cache.ped) == `WEAPON_PETROLCAN`
 	local playerCoords = GetEntityCoords(cache.ped)
-	local nearestPump = state.nearestPump()
+	local nearestPump = state.nearestPump
 
 	if nearestPump then
 		local moneyAmount = utils.getMoney()
 
 		if petrolCan and moneyAmount >= config.petrolCan.refillPrice then
-			return utils.getPetrolCan(nearestPump, true)
+			return fuel.getPetrolCan(nearestPump, true)
 		end
 
 		local vehicleInRange = state.lastVehicle and #(GetEntityCoords(state.lastVehicle) - playerCoords) <= 3
@@ -92,12 +93,12 @@ RegisterCommand('startfueling', function()
 			if not config.petrolCan.enabled then return end
 
 			if moneyAmount >= config.petrolCan.price then
-				return utils.getPetrolCan(nearestPump)
+				return fuel.getPetrolCan(nearestPump)
 			end
 
 			return lib.notify({ type = 'error', description = locale('petrolcan_cannot_afford') })
 		elseif moneyAmount >= config.priceTick then
-			return utils.startFueling(state.lastVehicle, true)
+			return fuel.startFueling(state.lastVehicle, true)
 		else
 			return lib.notify({ type = 'error', description = locale('refuel_cannot_afford') })
 		end
@@ -115,7 +116,7 @@ RegisterCommand('startfueling', function()
 			local fuelcapPosition = boneIndex and GetWorldPositionOfEntityBone(vehicle, boneIndex)
 
 			if fuelcapPosition and #(playerCoords - fuelcapPosition) < 1.8 then
-				return utils.startFueling(vehicle, false)
+				return fuel.startFueling(vehicle, false)
 			end
 
 			return lib.notify({ type = 'error', description = locale('vehicle_far') })

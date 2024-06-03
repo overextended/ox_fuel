@@ -1,6 +1,7 @@
 local config = require 'config'
-local state = require 'client.state'
-local utils = require 'client.utils'
+local state  = require 'client.state'
+local utils  = require 'client.utils'
+local fuel   = require 'client.fuel'
 
 if config.petrolCan.enabled then
 	exports.ox_target:addModel(config.pumpModels, {
@@ -8,7 +9,7 @@ if config.petrolCan.enabled then
 			distance = 2,
 			onSelect = function()
 				if utils.getMoney() >= config.priceTick then
-					utils.startFueling(state.lastVehicle, 1)
+					fuel.startFueling(state.lastVehicle, 1)
 				else
 					lib.notify({ type = 'error', description = locale('refuel_cannot_afford') })
 				end
@@ -33,7 +34,7 @@ if config.petrolCan.enabled then
 					return lib.notify({ type = 'error', description = locale('petrolcan_cannot_afford') })
 				end
 
-				return utils.getPetrolCan(data.coords, petrolCan)
+				return fuel.getPetrolCan(data.coords, petrolCan)
 			end,
 			icon = "fas fa-faucet",
 			label = locale('petrolcan_buy_or_refill'),
@@ -48,7 +49,7 @@ else
 					if GetVehicleFuelLevel(state.lastVehicle) >= 100 then
 						return lib.notify({ type = 'error', description = locale('vehicle_full') })
 					end
-					utils.startFueling(state.lastVehicle, 1)
+					fuel.startFueling(state.lastVehicle, 1)
 				else
 					lib.notify({ type = 'error', description = locale('refuel_cannot_afford') })
 				end
@@ -82,7 +83,7 @@ if config.petrolCan.enabled then
 					})
 				end
 
-				utils.startFueling(data.entity)
+				fuel.startFueling(data.entity)
 			end,
 			icon = "fas fa-gas-pump",
 			label = locale('start_fueling'),
