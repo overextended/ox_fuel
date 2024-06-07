@@ -1,0 +1,20 @@
+{
+	"tank_full": "O depósito deste veículo está cheio",
+	"petrolcan_cannot_afford": "Não tens dinheiro suficiente para um jerrican",
+	"refuel_cannot_afford": "Não tens dinheiro suficiente para abastecer o teu veículo",
+	"vehicle_far": "O teu veículo está demasiado longe",
+	"pump_fuel_with_can": "Guarda o teu jerrican antes de abastecer na bomba",
+	"fuel_help": "Pressiona ~INPUT_C2939D45~ para abastecer",
+	"petrolcan_help": "Pressiona ~INPUT_C2939D45~ para comprar ou reabastecer um jerrican",
+	"leave_vehicle": "Sai do veículo para começar a abastecer",
+	"start_fueling": "Começar a abastecer",
+	"petrolcan_buy_or_refill": "Comprar ou reabastecer um jerrican",
+	"fuel_station_blip": "Estação de serviço",
+	"not_enough_money": "Dinheiro insuficiente! Faltam %s€",
+	"fuel_success": "Abastecido até %s - %s€",
+	"petrolcan_refill": "Pagaste $%s para reabastecer o teu jerrican",
+	"petrolcan_buy": "Pagaste %s€ por um jerrican",
+	"petrolcan_cannot_carry": "Não consegues transportar este jerrican",
+	"petrolcan_not_enough_fuel": "O teu jerrican não tem combustível suficiente",
+	"petrolcan_not_equipped": "Precisas de equipar o teu jerrican"
+}
