@@ -43,7 +43,7 @@ end)
 
 RegisterNetEvent('ox_fuel:pay', function(price, fuel, netid)
 	assert(type(price) == 'number', ('Price expected a number, received %s'):format(type(price)))
-
+	local source = source
 	if not payMoney(source, price) then return end
 
 	fuel = math.floor(fuel)
@@ -56,6 +56,7 @@ RegisterNetEvent('ox_fuel:pay', function(price, fuel, netid)
 end)
 
 RegisterNetEvent('ox_fuel:fuelCan', function(hasCan, price)
+	local source = source
 	if hasCan then
 		local item = ox_inventory:GetCurrentWeapon(source)
 
