@@ -57,7 +57,7 @@ else
 			icon = "fas fa-gas-pump",
 			label = locale('start_fueling'),
 			canInteract = function(entity)
-				if state.isFueling or cache.vehicle then
+				if state.isFueling or cache.vehicle or not DoesVehicleUseFuel(state.lastVehicle) then
 					return false
 				end
 
@@ -88,7 +88,7 @@ if config.petrolCan.enabled then
 			icon = "fas fa-gas-pump",
 			label = locale('start_fueling'),
 			canInteract = function(entity)
-				if state.isFueling or cache.vehicle or lib.progressActive() then
+				if state.isFueling or cache.vehicle or lib.progressActive() or not DoesVehicleUseFuel(entity) then
 					return false
 				end
 				return state.petrolCan and config.petrolCan.enabled
