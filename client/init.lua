@@ -107,10 +107,7 @@ RegisterCommand('startfueling', function()
 	elseif petrolCan then
 		local vehicle = utils.getVehicleInFront()
 
-		if vehicle then
-			local hasFuel = config.classUsage[GetVehicleClass(vehicle)] or true
-
-			if hasFuel == 0.0 then return end
+		if vehicle and DoesVehicleUseFuel(vehicle) then
 
 			local boneIndex = utils.getVehiclePetrolCapBoneIndex(vehicle)
 			local fuelcapPosition = boneIndex and GetWorldPositionOfEntityBone(vehicle, boneIndex)
