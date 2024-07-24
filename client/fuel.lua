@@ -103,7 +103,7 @@ function fuel.startFueling(vehicle, isPump)
 		if isPump then
 			price += config.priceTick
 
-			if price + config.priceTick >= moneyAmount then
+			if price + config.priceTick >= moneyAmount and lib.progressActive() then
 				lib.cancelProgress()
 			end
 		elseif state.petrolCan then
