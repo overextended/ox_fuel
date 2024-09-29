@@ -1,0 +1,20 @@
+{
+	"tank_full": "O tanque deste veículo está cheio",
+	"petrolcan_cannot_afford": "Você não pode comprar um galão de gasolina",
+	"refuel_cannot_afford": "Você não tem dinheiro suficiente para reabastecer seu veículo",
+	"vehicle_far": "Seu veículo está muito longe",
+	"pump_fuel_with_can": "Guarde seu galão antes de abastecer na bomba",
+	"fuel_help": "Pressione ~INPUT_C2939D45~ para abastecer",
+	"petrolcan_help": "Pressione ~INPUT_C2939D45~ para comprar ou reabastecer um galão de gasolina",
+	"leave_vehicle": "Saia do veículo para poder começar a abastecer",
+	"start_fueling": "Começar a abastecer",
+	"petrolcan_buy_or_refill": "Comprar ou reabastecer um galão de gasolina",
+	"fuel_station_blip": "Posto de gasolina",
+	"not_enough_money": "Dinheiro insuficiente! Faltam $%s",
+	"fuel_success": "Abastecido até %s - $%s",
+	"petrolcan_refill": "Pago $%s para reabastecer seu galão de gasolina",
+	"petrolcan_buy": "Pago $%s por um galão de gasolina",
+	"petrolcan_cannot_carry": "Você não pode carregar este galão de gasolina",
+	"petrolcan_not_enough_fuel": "Seu galão de gasolina não tem combustível suficiente",
+	"petrolcan_not_equipped": "Você precisa equipar seu galão de gasolina"
+}
