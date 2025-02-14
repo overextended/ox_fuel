@@ -33,26 +33,30 @@ local function startDrivingVehicle()
 	local fuelTick = 0
 
 	while cache.seat == -1 do
-		if not DoesEntityExist(vehicle) then return end
+		if GetIsVehicleEngineRunning(vehicle) then
+			if not DoesEntityExist(vehicle) then return end
+			SetFuelConsumptionRateMultiplier(config.globalFuelConsumptionRate)
 
-		local fuelAmount = tonumber(vehState.fuel)
-		local newFuel = GetVehicleFuelLevel(vehicle)
-
-		if fuelAmount > 0 then
-			if GetVehiclePetrolTankHealth(vehicle) < 700 then
-				newFuel -= math.random(10, 20) * 0.01
-			end
-
-			if fuelAmount ~= newFuel then
-				if fuelTick == 15 then
-					fuelTick = 0
+			local fuelAmount = tonumber(vehState.fuel)
+			local newFuel = GetVehicleFuelLevel(vehicle)
+			if fuelAmount > 0 then
+				if GetVehiclePetrolTankHealth(vehicle) < 700 then
+					newFuel -= math.random(10, 20) * 0.01
 				end
 
-				fuel.setFuel(vehState, vehicle, newFuel, fuelTick == 0)
-				fuelTick += 1
-			end
-		end
+				if fuelAmount ~= newFuel then
+					if fuelTick == 15 then
+						fuelTick = 0
+					end
 
+					fuel.setFuel(vehState, vehicle, newFuel, fuelTick == 0)
+					fuelTick += 1
+				end
+			end
+		else
+			if not DoesEntityExist(vehicle) then return end
+			SetFuelConsumptionRateMultiplier(0.0)
+		end
 		Wait(1000)
 	end
 
