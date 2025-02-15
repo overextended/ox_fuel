@@ -1,0 +1,20 @@
+{
+	"tank_full": "Rezervorul acestui vehicul este plin",
+	"petrolcan_cannot_afford": "Nu îți poți permite o canistră",
+	"refuel_cannot_afford": "Nu îți poți permite sa alimentezi vehiculul",
+	"vehicle_far": "Vehiculul este prea departe",
+	"pump_fuel_with_can": "Put your can away before fueling with the pump",
+	"fuel_help": "Apasa ~INPUT_C2939D45~ pentru a alimenta",
+	"petrolcan_help": "Apasa ~INPUT_C2939D45~ pentru a cumpara sau alimenta o canistra",
+	"leave_vehicle": "Părăsește vehiculul pentru a putea alimenta",
+	"start_fueling": "Începe alimentarea",
+	"petrolcan_buy_or_refill": "Cumpără sau alimentează o canistră",
+	"fuel_station_blip": "Benzinarie",
+	"not_enough_money": "Nu ai destui bani! Lipsesc $%s",
+	"fuel_success": "Ai alimentat până la %s - $%s",
+	"petrolcan_refill": "Ai plătit $%s pentru a-ți alimenta canistră",
+	"petrolcan_buy": "ai plătit $%s pentru o canistră",
+	"petrolcan_cannot_carry": "Nu poți transporta această canistră",
+	"petrolcan_not_enough_fuel": "Canistra ta nu are destul combustibil",
+	"petrolcan_not_equipped": "Trebuie să ai canistra echipată"
+}
