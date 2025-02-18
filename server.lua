@@ -27,9 +27,9 @@ local function defaultPaymentMethod(playerId, price)
 
 	if success then return true end
 
-	local money = ox_inventory:GetItemCount(source, 'money')
+	local money = ox_inventory:GetItemCount(playerId, 'money')
 
-	TriggerClientEvent('ox_lib:notify', source, {
+	TriggerClientEvent('ox_lib:notify', playerId, {
 		type = 'error',
 		description = locale('not_enough_money', price - money)
 	})
