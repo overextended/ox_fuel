@@ -94,6 +94,13 @@ function fuel.startFueling(vehicle, isPump)
 				dict = isPump and 'timetable@gardener@filling_can' or 'weapon@w_sp_jerrycan',
 				clip = isPump and 'gar_ig_5_filling_can' or 'fire',
 			},
+			prop = isPump and {
+				model = 'prop_cs_fuel_nozle',
+				bone = 18905,
+				pos = vec3(0.1, 0.02, 0.02),
+				rot = vec3(90.0, 40.0, 170.0),
+				rotOrder = 1,
+			} or nil,
 		})
 
 		state.isFueling = false
