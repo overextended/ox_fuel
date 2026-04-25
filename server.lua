@@ -2,7 +2,7 @@ local config = require 'config'
 
 if not config then return end
 
-if config.versionCheck then lib.versionCheck('communityox/ox_fuel') end
+if config.versionCheck then lib.versionCheck('overextended/ox_fuel') end
 
 local ox_inventory = exports.ox_inventory
 

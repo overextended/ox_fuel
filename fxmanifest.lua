@@ -6,7 +6,7 @@ game 'gta5'
 name 'ox_fuel'
 author 'Overextended'
 version '1.5.2'
-repository 'https://github.com/communityox/ox_fuel'
+repository 'https://github.com/overextended/ox_fuel'
 description 'Fuel management system with ox_inventory support'
 
 dependencies {
