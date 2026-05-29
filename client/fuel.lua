@@ -12,7 +12,9 @@ function fuel.setFuel(vehState, vehicle, amount, replicate)
 		amount = math.clamp(amount, 0, 100)
 
 		SetVehicleFuelLevel(vehicle, amount)
-		vehState:set('fuel', amount, replicate)
+		vehState.fuel = amount
+
+		if replicate and NetworkGetEntityIsNetworked(vehicle) then TriggerServerEvent('ox_fuel:setFuel', amount) end
 	end
 end
 
