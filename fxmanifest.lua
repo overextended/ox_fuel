@@ -1,6 +1,5 @@
 fx_version 'cerulean'
 use_experimental_fxv2_oal 'yes'
-lua54 'yes'
 game 'gta5'
 
 name 'ox_fuel'
@@ -11,7 +10,7 @@ description 'Fuel management system with ox_inventory support'
 
 dependencies {
 	'ox_lib',
-	'ox_inventory',
+	'ox_inventory'
 }
 
 shared_scripts {
@@ -28,7 +27,7 @@ client_script 'client/init.lua'
 files {
 	'locales/*.json',
 	'data/stations.lua',
-	'client/*.lua',
+	'client/*.lua'
 }
 
 ox_libs {
